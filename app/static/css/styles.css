@@ -124,7 +124,7 @@ body {
     -webkit-user-select: none;
     -moz-user-select: none;
     user-select: none;
-    background-image: url("/app/static/img/header.jpg");
+    background-image: url("static/img/header.jpg");
     text-decoration: none;
     
 }
