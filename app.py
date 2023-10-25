@@ -1,1 +1,1 @@
-from app import app
+from menu_app import app

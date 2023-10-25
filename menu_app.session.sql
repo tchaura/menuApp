@@ -1,0 +1,1 @@
+UPDATE Subcategories SET photo=NULL
