@@ -16,6 +16,7 @@ app.config.from_mapping(
 
 import menu_app.routes
 import menu_app.db
+import menu_app.models
 
 from . import index
 app.register_blueprint(index.bp)

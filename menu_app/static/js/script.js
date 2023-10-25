@@ -9,7 +9,7 @@ function get_subcategories(category_id) {
         data['subcategories'].forEach(subcategory => {
             $("#subcategories").append(
                 `<div class="subcategory">
-        <button class="sub-label" name="subcategory" onclick="get_menu_items(${subcategory['subcategory_id']}, '${subcategory['subcategory_name']}', ${category_id})" type="submit" style="background-image: url(${subcategory['photo'] ? subcategory['photo'] : ""});">
+        <button class="sub-label" name="subcategory" onclick="get_menu_items(${subcategory['subcategory_id']}, '${subcategory['subcategory_name']}', ${category_id})" type="submit" style="background-image: url(${subcategory['subcategory_photo'] ? subcategory['subcategory_photo'] : ""});">
             <h2 style="position: relative;">${subcategory['subcategory_name']}</h2>
         </button>
     </div>`)
