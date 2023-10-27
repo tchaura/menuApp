@@ -22,7 +22,7 @@
             <span class="text-nowrap d-flex info"><span class="bi-wifi info me-1"></span><span class="me-3" id="wifi">wifi</span><span class="bi-key info me-1"></span><span id="wifi-password">12345678</span></span>
         </div>
         <div id="menu" class="right-fade">
-            <div class="overflow-x-scroll container pb-0 d-flex gap-2">
+            <div class="container pb-0 d-flex gap-2">
                 {% for category in categories %}
                 <a id="{{ category['category_id'] }}" class="menu-badge" onclick="get_subcategories({{category['category_id']}})">{{category['category_name']}}</a>
                 {% endfor %}
@@ -48,6 +48,13 @@
         <footer>
         <div class="mt-5 pb-2 text-center">
             © Company 2023
+            <ul>
+    <li><a href="{{ url_for('set_language', language='en') }}">English</a></li>
+    <li><a href="{{ url_for('set_language', language='ru') }}">Русский</a></li>
+    <li><a href="{{ url_for('set_language', language='tr') }}">Türkçe</a></li>
+    <li><a href="{{ url_for('set_language', language='zh') }}">中文</a></li>
+</ul>
+
         </div>
         </footer>
 </body>

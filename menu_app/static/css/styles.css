@@ -65,8 +65,8 @@ body {
   *::-webkit-scrollbar-thumb {
     background-color: gray;
     border-radius: 10px;
-    border: 6px solid var(--bg-color);
-}
+    border: 7px solid var(--bg-color);
+  }
 
 #menu {
     position: sticky;
@@ -74,6 +74,19 @@ body {
     background-color: var(--bg-color);
     padding-top: 1rem;
     z-index: 10;
+}
+
+#menu div {
+    overflow-x: scroll;
+}
+
+#menu div::-webkit-scrollbar-thumb {
+    background-color: var(--bg-color);
+    transition: 0.2s;
+}
+#menu:hover div::-webkit-scrollbar-thumb {
+    background-color: gray;
+    transition: 0.4s;
 }
 
 .menu-badge {

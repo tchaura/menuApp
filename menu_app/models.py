@@ -1,84 +1,120 @@
-from sqlalchemy import create_engine, Column, Integer, String, Float, Text, ForeignKey
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
+from flask_sqlalchemy import SQLAlchemy
 
-# Создайте объект для подключения к базе данных
-engine = create_engine('sqlite:///menu_app/db.sqlite')
-# Создайте базовый класс для определения модели
-Base = declarative_base()
+db = SQLAlchemy()
 
-# Определите модели данных для таблиц Subcategories и MenuItems
-class Category(Base):
+class Category(db.Model):
     __tablename__ = 'Categories'
-    category_id = Column(Integer, primary_key=True)
-    category_name = Column(String, nullable=False)
-    
-class Subcategory(Base):
+    category_id = db.Column(db.Integer, primary_key=True)
+    category_name = db.Column(db.String, nullable=False)
+    subcategories = db.relationship('Subcategory', backref='category', lazy=True)
+
+class Subcategory(db.Model):
     __tablename__ = 'Subcategories'
-    subcategory_id = Column(Integer, primary_key=True)
-    subcategory_name = Column(String, nullable=False)
-    category_id = Column(Integer)
-    subcategory_photo = Column(Text)
+    subcategory_id = db.Column(db.Integer, primary_key=True)
+    subcategory_name = db.Column(db.String, nullable=False)
+    subcategory_photo = db.Column(db.Text, nullable=False)
+    category_id = db.Column(db.Integer, db.ForeignKey('Categories.category_id'))
+    items = db.relationship('MenuItem', backref='subcategory', lazy=True)
 
-class MenuItem(Base):
+class MenuItem(db.Model):
     __tablename__ = 'MenuItems'
-    item_id = Column(Integer, primary_key=True)
-    item_name = Column(String, nullable=False)
-    price = Column(Float, nullable=False)
-    description = Column(Text)
-    ingredients = Column(Text)
-    weight = Column(Float)
-    item_photo = Column(Text)
-    subcategory_id = Column(Integer, ForeignKey('Subcategories.subcategory_id'))
+    item_id = db.Column(db.Integer, primary_key=True)
+    item_name = db.Column(db.String, nullable=False)
+    item_photo = db.Column(db.Text, nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    description = db.Column(db.Text)
+    ingredients = db.Column(db.Text)
+    weight = db.Column(db.Float)
+    subcategory_id = db.Column(db.Integer, db.ForeignKey('Subcategories.subcategory_id'))
 
-# Создайте сессию для взаимодействия с базой данных
-Session = sessionmaker(bind=engine)
-session = Session()
-
-
-
-# Теперь вы можете использовать модели Subcategory и MenuItem для выполнения запросов к базе данных.
-def add_category(category_name):
+def create_category(category_name):
     new_category = Category(category_name=category_name)
-    session.add(new_category)
-    session.commit()
+    db.session.add(new_category)
+    db.session.commit()
+    return new_category
 
-# Функция для получения всех категорий
-def get_all_categories():
-    return session.query(Category).all()
-
-# Функция для добавления новой подкатегории
-def add_subcategory(subcategory_name, category_id, subcategory_photo=None):
-    new_subcategory = Subcategory(subcategory_name=subcategory_name, category_id=category_id, subcategory_photo=subcategory_photo)
-    session.add(new_subcategory)
-    session.commit()
-
-# Функция для получения всех подкатегорий
-def get_all_subcategories():
-    return session.query(Subcategory).all()
-
-# Функция для добавления новой позиции меню
-def add_menu_item(item_name, price, description, ingredients, weight, subcategory_id, item_photo = None):
+def create_menu_item(item_name, price, description, ingredients, weight, subcategory_id):
     new_item = MenuItem(
         item_name=item_name,
         price=price,
         description=description,
         ingredients=ingredients,
         weight=weight,
-        item_photo=item_photo,
         subcategory_id=subcategory_id
     )
-    session.add(new_item)
-    session.commit()
+    db.session.add(new_item)
+    db.session.commit()
+    return new_item
 
 # Функция для получения всех позиций меню
 def get_all_menu_items():
-    return session.query(MenuItem).all()
+    return MenuItem.query.all()
+
+# Функция для получения позиции меню по id
+def get_menu_item_by_id(item_id):
+    return MenuItem.query.get(item_id)
+
+# Функция для обновления позиции меню
+def update_menu_item(menu_item, new_data):
+    menu_item.item_name = new_data["item_name"]
+    menu_item.price = new_data["price"]
+    menu_item.description = new_data["description"]
+    menu_item.ingredients = new_data["ingredients"]
+    menu_item.weight = new_data["weight"]
+    menu_item.subcategory_id = new_data["subcategory_id"]
+    db.session.commit()
+
+# Функция для удаления позиции меню
+def delete_menu_item(menu_item):
+    db.session.delete(menu_item)
+    db.session.commit()
+
+# Функция для получения всех категорий
+def get_all_categories():
+    return Category.query.all()
+
+# Функция для получения категории по id
+def get_category_by_id(category_id):
+    return Category.query.get(category_id)
+
+# Функция для обновления категории
+def update_category(category, new_category_name):
+    category.category_name = new_category_name
+    db.session.commit()
+
+# Функция для удаления категории
+def delete_category(category):
+    db.session.delete(category)
+    db.session.commit()
+    
+def create_subcategory(subcategory_name, category_id):
+    new_subcategory = Subcategory(subcategory_name=subcategory_name, category_id=category_id)
+    db.session.add(new_subcategory)
+    db.session.commit()
+    return new_subcategory
+
+# Функция для получения всех подкатегорий
+def get_all_subcategories():
+    return Subcategory.query.all()
+
+# Функция для получения подкатегории по id
+def get_subcategory_by_id(subcategory_id):
+    return Subcategory.query.get(subcategory_id)
+
+# Функция для обновления подкатегории
+def update_subcategory(subcategory, new_subcategory_name):
+    subcategory.subcategory_name = new_subcategory_name
+    db.session.commit()
+
+# Функция для удаления подкатегории
+def delete_subcategory(subcategory):
+    db.session.delete(subcategory)
+    db.session.commit()
 
 # Функция для получения подкатегорий по id категории
 def get_subcategories_by_category_id(category_id):
-    return session.query(Subcategory).filter(Subcategory.category_id == category_id).all()
+    return Subcategory.query.filter_by(category_id=category_id).all()
 
 # Функция для получения позиций меню по id подкатегории
 def get_menu_items_by_subcategory_id(subcategory_id):
-    return session.query(MenuItem).filter(MenuItem.subcategory_id == subcategory_id).all()
+    return MenuItem.query.filter_by(subcategory_id=subcategory_id).all()
