@@ -262,3 +262,5 @@ pyrightconfig.json
 # End of https://www.toptal.com/developers/gitignore/api/flask,python
 
 secret.txt
+menu_app/static/img/menu_items
+menu_app/static/img/subcategories

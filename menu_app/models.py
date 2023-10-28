@@ -1,5 +1,8 @@
-from flask_sqlalchemy import SQLAlchemy
 
+from ast import Sub
+from nis import cat
+from flask_sqlalchemy import SQLAlchemy
+from markupsafe import Markup
 db = SQLAlchemy()
 
 class Category(db.Model):
@@ -15,6 +18,15 @@ class Subcategory(db.Model):
     subcategory_photo = db.Column(db.Text, nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey('Categories.category_id'))
     items = db.relationship('MenuItem', backref='subcategory', lazy=True)
+    
+    @property
+    def category_name(self):
+        category_name = Category.query.filter(Category.category_id == self.category_id).first().category_name
+        return category_name
+    
+    @property
+    def photo_thumb(self):
+        return Markup('<img height=\'50px\' src=\'/' + (self.subcategory_photo if self.subcategory_photo else '') + '\'>')
 
 class MenuItem(db.Model):
     __tablename__ = 'MenuItems'
@@ -26,22 +38,31 @@ class MenuItem(db.Model):
     ingredients = db.Column(db.Text)
     weight = db.Column(db.Float)
     subcategory_id = db.Column(db.Integer, db.ForeignKey('Subcategories.subcategory_id'))
+    
+    @property
+    def photo_thumb(self):
+        return Markup('<img height=\'50px\' src=\'/' + (self.item_photo if self.item_photo else '') + '\'>')
+    
+    @property
+    def subcategory_name(self):
+        subcategory_name = Subcategory.query.filter(Subcategory.subcategory_id == self.subcategory_id).first().subcategory_name
+        return subcategory_name
 
 def create_category(category_name):
-    new_category = Category(category_name=category_name)
+    new_category = Category()
+    new_category.category_name = category_name
     db.session.add(new_category)
     db.session.commit()
     return new_category
 
 def create_menu_item(item_name, price, description, ingredients, weight, subcategory_id):
-    new_item = MenuItem(
-        item_name=item_name,
-        price=price,
-        description=description,
-        ingredients=ingredients,
-        weight=weight,
-        subcategory_id=subcategory_id
-    )
+    new_item = MenuItem()
+    new_item.item_name=item_name,
+    new_item.price=price,
+    new_item.description=description,
+    new_item.ingredients=ingredients,
+    new_item.weight=weight,
+    new_item.subcategory_id=subcategory_id
     db.session.add(new_item)
     db.session.commit()
     return new_item
@@ -88,7 +109,9 @@ def delete_category(category):
     db.session.commit()
     
 def create_subcategory(subcategory_name, category_id):
-    new_subcategory = Subcategory(subcategory_name=subcategory_name, category_id=category_id)
+    new_subcategory = Subcategory()
+    new_subcategory.subcategory_name = subcategory_name
+    new_subcategory.category_id = category_id
     db.session.add(new_subcategory)
     db.session.commit()
     return new_subcategory

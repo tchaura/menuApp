@@ -2,8 +2,8 @@ from http import cookies
 from flask import Flask, render_template, request, session
 from flask_babel import Babel
 from flask_login import LoginManager
-from .models import db
 import os
+from .models import db
 from . import index
 
 
