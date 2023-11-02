@@ -1,5 +1,6 @@
 
 from ast import Sub
+from email.policy import default
 from nis import cat
 from flask_sqlalchemy import SQLAlchemy
 from markupsafe import Markup
@@ -10,6 +11,8 @@ class Category(db.Model):
     category_id = db.Column(db.Integer, primary_key=True)
     category_name = db.Column(db.String, nullable=False)
     subcategories = db.relationship('Subcategory', backref='category', lazy=True)
+    has_subcategories = db.Column(db.Integer, default = 0)
+        
 
 class Subcategory(db.Model):
     __tablename__ = 'Subcategories'
@@ -38,6 +41,7 @@ class MenuItem(db.Model):
     ingredients = db.Column(db.Text)
     weight = db.Column(db.Float)
     subcategory_id = db.Column(db.Integer, db.ForeignKey('Subcategories.subcategory_id'))
+    category_id = db.Column(db.Integer, db.ForeignKey('Categories.category_id'))
     
     @property
     def photo_thumb(self):
@@ -45,8 +49,18 @@ class MenuItem(db.Model):
     
     @property
     def subcategory_name(self):
+        if (self.subcategory_id == 0):
+            return "Без подкатегории"
+        
         subcategory_name = Subcategory.query.filter(Subcategory.subcategory_id == self.subcategory_id).first().subcategory_name
         return subcategory_name
+    @property
+    def category_name(self):
+        if (self.category_id == 0):
+            return "Без категории"
+        
+        category_name = Category.query.filter(Category.category_id == self.category_id).first().category_name
+        return category_name
 
 def create_category(category_name):
     new_category = Category()

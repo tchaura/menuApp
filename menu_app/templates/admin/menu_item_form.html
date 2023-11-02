@@ -1,0 +1,59 @@
+{% extends 'admin/model/edit.html' %}
+{% block body %}
+    {{super()}}
+
+    <style>
+        label[for=bindToCategory] {
+            display: inline-block !important;
+        }
+
+        #bindToSubcategory {
+            order: 2;
+        }
+        label[for=bindToSubcategory] {
+            order: 1;
+            display: inline-block !important;
+        }
+    </style>
+    <script src="/static/js/jquery.js"></script>
+    <script>
+    $(document).ready(function() {
+        var bindToCategoryCheckbox = $('#bindToCategory');
+        var bindToSubcategoryCheckbox = $('#bindToSubcategory');
+        var categoryField = $('#category_id');
+        var categoryLabel = $("label[for='category_id']")
+        var subcategoryLabel = $("label[for='subcategory_id']")
+        var subcategoryField = $('#subcategory_id');
+
+        // Изначально скрываем subcategory_id и устанавливаем bindToCategory в checked
+        subcategoryField.hide();
+        subcategoryLabel.hide();
+        bindToCategoryCheckbox.prop('checked', true);
+
+        // Обработка изменения состояния чекбокса bindToCategory
+        bindToCategoryCheckbox.change(function() {
+            if (bindToCategoryCheckbox.is(':checked')) {
+                categoryField.show();
+                categoryLabel.show();
+                subcategoryField.hide();
+                subcategoryLabel.hide();
+                bindToSubcategoryCheckbox.prop('checked', false);
+            }
+        });
+
+        // Обработка изменения состояния чекбокса bindToSubcategory
+        bindToSubcategoryCheckbox.change(function() {
+            if (bindToSubcategoryCheckbox.is(':checked')) {
+                subcategoryField.show();
+                subcategoryLabel.show();
+                categoryField.hide();
+                categoryLabel.hide()
+                bindToCategoryCheckbox.prop('checked', false);
+            }
+        });
+    });
+</script>
+
+
+
+{% endblock %}
