@@ -1,20 +1,23 @@
-from http import cookies
-from flask import Flask, render_template, request, session
-from flask_babel import Babel, refresh
+from flask import Flask
+from flask_babel import Babel
 from flask_login import LoginManager
 import os
 from .models import db
-from . import index
-from flask import g
 
 
-from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
+app.config['LANGUAGES'] = {
+    'en': 'English',
+    'ru': 'Русский',
+    'tr': 'Türkçe',
+    'zh': '中文'
+}
 login_manager = LoginManager(app)
-import menu_app.models
 import menu_app.admin
+import menu_app.localization
+from . import index
 
 import menu_app.routes
 
@@ -29,14 +32,7 @@ app.config['SECRET_KEY'] = os.environ.get("MENU_APP_SECRET_KEY")
 db.init_app(app)
 app.register_blueprint(index.bp)
 
-app.config['LANGUAGES'] = {
-    'en': 'English',
-    'ru': 'Русский',
-    'tr': 'Türkçe',
-    'zh': '中文'
-}
 def get_locale():
     return 'ru'
-    # return request.accept_languages.best_match(app.config['LANGUAGES'].keys())
 
 babel = Babel(app, locale_selector = get_locale)

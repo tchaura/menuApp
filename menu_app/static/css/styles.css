@@ -72,7 +72,6 @@ body {
     position: sticky;
     top: 0;
     background-color: var(--bg-color);
-    padding-top: 1rem;
     z-index: 10;
 }
 
@@ -331,3 +330,19 @@ footer {
     cursor: pointer;
 }
 
+#lang-select {
+    position: relative;
+    margin-top: -70px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: end;
+    margin-right: 10px;
+}
+
+#lang-select select {
+    background-color: var(--bg-color);
+    color: white;
+    border: solid transparent;
+    border-radius: 7px;
+    padding: 5px;
+}

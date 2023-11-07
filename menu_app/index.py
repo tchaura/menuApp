@@ -1,21 +1,20 @@
-from audioop import add
-from crypt import methods
-from flask_babel import gettext
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for
+    Blueprint, render_template, request
 )
-from werkzeug.exceptions import abort
-from flask_babel import get_locale
 
-from menu_app.models import (get_all_categories, get_menu_items_by_subcategory_id, get_subcategories_by_category_id)
+from menu_app.models import (Category, Translation)
+from menu_app.localization import get_translated_model
 
 bp = Blueprint('subcategories', __name__)
 
 @bp.route("/", methods = ['GET', 'POST'])
 def index():
-    categories = get_all_categories()
-    locale = get_locale()
-    test = gettext("This isn't working")
-    flash(test)
+    categories = Category.query.all()
+    lang = request.cookies.get('lang')
+    if lang == 'ru':
+        return render_template("subcategories.html", categories = categories)
+    
+    translated_model = get_translated_model(Category, lang)
+    
+    return render_template('subcategories.html', categories = translated_model)
         
-    return render_template("subcategories.html", categories = categories, locale = locale)

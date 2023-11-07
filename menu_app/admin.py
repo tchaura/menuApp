@@ -1,13 +1,10 @@
 import os
-from unicodedata import category
 from flask_admin import Admin, expose
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.form import Select2Widget
-from flask_admin.model.typefmt import bool_formatter
 from flask_admin.contrib.sqla.filters import FilterEqual
 from flask_admin.form.upload import FileUploadField
-from wtforms import SelectField, BooleanField
-from wtforms.validators import InputRequired
+from wtforms import SelectField, BooleanField, StringField, TextAreaField
 from werkzeug.utils import secure_filename
 from flask_babel import lazy_gettext as _
 from . import db
@@ -15,9 +12,9 @@ from .login import MyAdminIndexView
 import flask_login as login
 from . import app
 from .models import Category, Subcategory, MenuItem
+from menu_app import localization
+from .localization import LANGUAGES, extra_fields_generator
 
-
-# Views
 class SubcategoryNameFilter(FilterEqual):
     def apply(self, query, value):
         return query.join(Subcategory).filter(Subcategory.subcategory_name == value)
@@ -35,14 +32,16 @@ class MenuItemModelView(ModelView):
     def is_accessible(self):
         return login.current_user.is_authenticated
     
-    create_template = 'admin/menu_item_form.html'  # Путь к шаблону для создания новой записи
-    edit_template = 'admin/menu_item_form.html'    # Путь к шаблону для редактирования существующей записи
+    create_template = 'admin/menu_item_form.html'
+    edit_template = 'admin/menu_item_form.html'
 
     # Остальные настройки представления
 
-    column_labels = dict(item_name= 'Имя', item_photo= 'Фото', subcategory_name = 'Подкатегория', photo_thumb = 'Фото',
+    column_labels = dict(item_name= 'Название блюда', item_photo= 'Фото', subcategory_name = 'Подкатегория', photo_thumb = 'Фото',
                          ingredients='Состав', description='Описание', price = 'Цена (разделяется запятой)', weight = 'Вес', category_name = 'Категория')
     column_list = ('item_name', 'subcategory_name', 'category_name', 'photo_thumb')
+    
+    
     
     # Helper methods
     def get_subcategory_choices(self):
@@ -81,9 +80,7 @@ class MenuItemModelView(ModelView):
         ]
         self._refresh_filters_cache()
         return super(MenuItemModelView, self).index_view()
-    
 
-    # Forms config
     form_overrides = {
         'item_photo': FileUploadField,
     }
@@ -95,33 +92,35 @@ class MenuItemModelView(ModelView):
         },
     }
     
-    form_columns = (
-        'item_name',
-        'item_photo',
-        'description',
-        'ingredients',
-        'weight',
-        'price',
-        'bindToSubcategory',
-        'bindToCategory',
-        'subcategory_id',
-        'category_id'
-    )
-    
     form_extra_fields = {
-        'subcategory_id': SelectField(
-            label='Подкатегория',
-        ),
-        'category_id': SelectField(
-            label='Категория',
-        ),
         'bindToSubcategory': BooleanField(
             label='Привязать к подкатегории'
         ),
         'bindToCategory': BooleanField(
             label='Привязать к категории'
+        ),
+        'subcategory_id': SelectField(
+            label='Подкатегория',
+            validate_choice=False
+        ),
+        'category_id': SelectField(
+            label='Категория',
+            validate_choice=False
         )
     }
+    
+    localized_fields = [('item_name', 'Название блюда'), ('description', 'Описание', TextAreaField), ('ingredients', 'Состав', TextAreaField)]
+    form_extra_fields.update(extra_fields_generator(localized_fields))
+    
+    def after_model_change(self, form, model, is_created, localized_fields = localized_fields):
+        localization.after_model_change(self, form, model, is_created, localized_fields, 'MenuItems', model.item_id)
+
+    def on_form_prefill(self, form, id, localized_fields = localized_fields):  
+        localization.on_form_prefill(self, form, localized_fields, 'MenuItems', id)
+
+    def on_model_delete(self, model, localized_fields = localized_fields):
+        localization.on_model_delete(self, 'MenuItems', localized_fields, model.item_id)
+    
     def create_form(self):
         form = super().create_form()
         form.subcategory_id.choices = self.get_subcategory_choices()
@@ -161,31 +160,35 @@ class CategoryModelView(ModelView):
     def is_accessible(self):
         return login.current_user.is_authenticated
     
-    column_labels = dict(category_name = 'Имя категории', has_subcategories = 'Есть подкатегории?')
+    column_labels = dict(category_name = 'Имя категории', has_subcategories = 'Добавление подкатегорий')
     column_formatters = {
         'has_subcategories': lambda v, c, m, p: 'Да' if m.has_subcategories else 'Нет'
     }
     
     form_extra_fields = {
-        'has_subcategories': SelectField('Есть подкатегории', widget=Select2Widget(), choices=[(1, 'Да'), (0, 'Нет')], coerce=int)
+        'has_subcategories': SelectField('Добавление подкатегории', choices=[(1, 'Да'), (0, 'Нет')], coerce=int)
     }
     
+    localized_fields = [('category_name', 'Имя категории')]
+    form_extra_fields.update(extra_fields_generator(localized_fields))
     
-    # def on_model_change(self, form, model, is_created):
-        # model.has_subcategories = 1 if form.has_subcategories.data is True else 0
-    
-# Filter for Subcategories
-class CategoryNameFilter(FilterEqual):
-    def apply(self, query, value):
-        return query.join(Category).filter(Category.category_name == value)
+    def after_model_change(self, form, model, is_created, localized_fields = localized_fields):
+        localization.after_model_change(self, form, model, is_created, localized_fields, 'Categories', model.category_id)
 
-    def operation(self):
-        return 'равна'
+    def on_form_prefill(self, form, id, localized_fields = localized_fields):  
+        localization.on_form_prefill(self, form, localized_fields, 'Categories', id)
+
+    def on_model_delete(self, model, localized_fields = localized_fields):
+        localization.on_model_delete(self, 'Categories', localized_fields, model.category_id)
+    
     
 class SubcategoryModelView(ModelView):
     
     def is_accessible(self):
         return login.current_user.is_authenticated    
+    
+    create_template = 'admin/subcategory_form.html'
+    edit_template = 'admin/subcategory_form.html'
     
     column_labels = dict(subcategory_name= 'Имя', subcategory_photo= 'Фото', category_name = 'Категория', photo_thumb = 'Фото')
     column_list = ('subcategory_name', 'category_name', 'photo_thumb')
@@ -207,6 +210,7 @@ class SubcategoryModelView(ModelView):
             return (super(SubcategoryModelView, self).get_filters() or []) + _dynamic_filters
         else:
             return super(SubcategoryModelView, self).get_filters()
+    
     
     @expose('/')
     def index_view(self):
@@ -233,6 +237,8 @@ class SubcategoryModelView(ModelView):
             label='Категории',
         )
     }
+    
+    
     def create_form(self):
         form = super().create_form()
         form.category_id.choices = self.get_category_choices()
@@ -243,6 +249,18 @@ class SubcategoryModelView(ModelView):
         form.category_id.choices = self.get_category_choices()
         return form
     
+    localized_fields = [('subcategory_name', 'Имя подкатегории')]
+    form_extra_fields.update(extra_fields_generator(localized_fields))
+    
+    def after_model_change(self, form, model, is_created, localized_fields = localized_fields):
+        localization.after_model_change(self, form, model, is_created, localized_fields, 'Subcategories', model.subcategory_id)
+
+    def on_form_prefill(self, form, id, localized_fields = localized_fields):  
+        localization.on_form_prefill(self, form, localized_fields, 'Subcategories', id)
+
+    def on_model_delete(self, model, localized_fields = localized_fields):
+        localization.on_model_delete(self, 'Subcategories', localized_fields, model.subcategory_id)
+        
     def on_model_change(self, form, model, is_created):
         if form.subcategory_photo.data:
             # if photo is not changed, do nothing
@@ -264,4 +282,3 @@ admin = Admin(app, name='Панель администратора', template_mo
 admin.add_view(CategoryModelView(Category, db.session, name='Категории'))
 admin.add_view(SubcategoryModelView(Subcategory, db.session, name='Подкатегории'))
 admin.add_view(MenuItemModelView(MenuItem, db.session, name="Блюда"))
-

@@ -4,13 +4,16 @@ function get_subcategories(category_id) {
     $.get("/categories", {category_id : category_id}
     ).done(function(data) {
         $(".menu-badge").removeClass("active")
-        $(`.menu-badge:nth-child(${category_id})`).addClass("active")
+        $(`.menu-badge#${category_id}`).addClass("active")
         if (data['has_subcategories'] == false) {
             get_menu_items(null, null, category_id);
             return;
         }
         $("#search").show()
         $("#content").empty();
+        if (data['subcategories'].length == 0) {
+            emptyResponseFallback();
+        }
         data['subcategories'].forEach(subcategory => {
             $("#content").append(
                 `<div class="subcategory">
@@ -29,7 +32,7 @@ function get_subcategories(category_id) {
         ).done(function (data) {
             if (category_id == null) {
                 $("#search").hide()
-                $("#subcategory-header").html(`<h2 onclick="get_subcategories(${data['parent_category_id']})"><span class="bi-arrow-left-short" style="color:var(--website-secondary-color)"></span> ${subcategory_name}</h2>`)
+                $("#subcategory-header").html(`<h2 class="d-flex flex-row gap-2" onclick="get_subcategories(${data['parent_category_id']})"><span class="bi-arrow-left-short fs-1" style="color:var(--website-secondary-color)"></span> ${subcategory_name}</h2>`)
                 $("#subcategory-header").show()
             }
             else {
@@ -43,14 +46,14 @@ function get_subcategories(category_id) {
                 $("#content").append(
                     `<div class="menu-items" id="${menu_item['item_id']}">
                     <img src="${menu_item['item_photo']}">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
+                    <div class="d-flex justify-content-between align-items-center mb-1 flex-wrap">
                     <h2 class="menu-items-title mb-0">${menu_item['item_name']}</h2>
-                    <span class="menu-items-weight">${menu_item['weight']} г.</span>
+                    <span class="menu-items-weight">${menu_item['weight']} ${getCookie('lang') == 'ru' ? 'г.' : 'g.'}</span>
                     </div>
                     <div class="menu-items-description" onclick="expandCropText(${menu_item['item_id']});"><p>${menu_item['description']}</p></div>
                     <span class="menu-items-ingredients fst-italic">Состав: ${menu_item['ingredients']}</span>
                     <h3 class="menu-items-price mt-2">
-                    ${menu_item['price']} р.
+                    ${menu_item['price']} ${getCookie('lang') == 'ru' ? 'р.' : 'Br'}
                     </h3>
                     </div>`
                     )
@@ -63,8 +66,11 @@ function get_subcategories(category_id) {
         }
         
         $(document).ready(() => {
-            get_subcategories(1);            
-        })
+            $.get('/get_first_category_id').done(function (data) {
+                get_subcategories(data['category_id']);            
+            });
+            setCurrentLang();
+        });
         
         
         function expandCropText(item_id) {
@@ -127,3 +133,24 @@ function get_subcategories(category_id) {
                 });
             });
         }
+
+        function setCurrentLang() {
+            var selector = document.querySelectorAll("#lang-select select")[0];
+            var currentLang = getCookie('lang')
+            selector.value = currentLang != null ? currentLang : 'ru';
+        }
+
+        function handleLangChange() {
+            var selector = document.querySelectorAll("#lang-select select")[0];
+            var lang = selector.options[selector.selectedIndex].value
+            // Set a session cookie with JavaScript
+            document.cookie = `lang=${lang}; path=/; max-age=3600`;
+
+            location.reload()
+        }
+
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+          }
