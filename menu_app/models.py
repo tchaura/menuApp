@@ -2,6 +2,7 @@
 from ast import Sub
 from email.policy import default
 from nis import cat
+from flask_login import logout_user
 from flask_sqlalchemy import SQLAlchemy
 from markupsafe import Markup
 db = SQLAlchemy()
@@ -77,3 +78,22 @@ class Translation(db.Model):
         self.reference_id = reference_id
         self.reference_field = reference_field
         self.translation_value = translation_value
+
+
+class Information(db.Model):
+    info_id = db.Column(db.Integer, primary_key = True)
+    logo = db.Column(db.String(255), nullable = False)
+    header_img = db.Column(db.String(255), nullable = False)
+    title = db.Column(db.String(100), nullable = False)
+    adress = db.Column(db.String(100), nullable = False)
+    phone = db.Column(db.String(100), nullable = False)
+    wifi = db.Column(db.String(100), nullable = False)
+    wifi_password = db.Column(db.String(100), nullable = False)
+    
+    @property
+    def logo_thumb(self):
+        return Markup('<img height=\'50px\' src=\'/' + (self.logo if self.logo else '') + '\'>')
+    
+    @property
+    def header_thumb(self):
+        return Markup('<img height=\'50px\' src=\'/' + (self.header_img if self.header_img else '') + '\'>')

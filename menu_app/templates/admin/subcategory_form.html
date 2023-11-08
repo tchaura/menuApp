@@ -20,37 +20,6 @@
     </div>
     {{ super() }}
     <script src="/static/js/jquery.js"></script>
-    <script>
-    $('#formContainer').prependTo($('form.admin-form'))
-    var langValues = new Set();
-
-    $("div.form-group input[lang]").each(function() {
-        var langValue = $(this).attr("lang");
-        langValues.add(langValue)
-        $(this).closest("div.form-group").attr({'id' : langValue});
-        $(this).closest("div.form-group").addClass('locale');
-    });
-
-    langValues.forEach((value) => {
-        $("#localeTabs").append(
-            `<li class="nav-item"><a class="nav-link" href="#${value}">${value}</a></li>`
-        )
-    });
-    $("div.locale").each(function() {
-        let id = $(this).attr("id")
-        $("#localeTabContent").append(
-        `<div class="tab-pane fade" id="${id}">
-
-        </div>`
-        )
-        $(`.tab-pane#${id}`).append($(this));
-    })
-    $("fieldset").appendTo($('#localeTabContent #main'))
-
-    $('#localeTabs a').on('click', function (e) {
-        e.preventDefault();
-        $(this).tab('show');
-    });
-    </script>
+    <script src="/static/js/admin/locale-edit.js"></script>
     {%endblock%}
 {%endblock%}

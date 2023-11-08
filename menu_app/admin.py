@@ -4,14 +4,14 @@ from flask_admin.contrib.sqla import ModelView
 from flask_admin.form import Select2Widget
 from flask_admin.contrib.sqla.filters import FilterEqual
 from flask_admin.form.upload import FileUploadField
-from wtforms import SelectField, BooleanField, StringField, TextAreaField
+from wtforms import PasswordField, SelectField, BooleanField, StringField, TextAreaField, TelField
 from werkzeug.utils import secure_filename
 from flask_babel import lazy_gettext as _
 from . import db
 from .login import MyAdminIndexView
 import flask_login as login
 from . import app
-from .models import Category, Subcategory, MenuItem
+from .models import Category, Information, Subcategory, MenuItem
 from menu_app import localization
 from .localization import LANGUAGES, extra_fields_generator
 
@@ -277,8 +277,75 @@ class SubcategoryModelView(ModelView):
                 if os.path.exists(os.path.join(app.root_path, old_filename)):
                     os.remove(os.path.join(app.root_path, old_filename))
                 
+class InformationView(ModelView):
+    def is_accessible(self):
+        return login.current_user.is_authenticated  
+    
+    form_extra_fields = {}
+    
+    create_template = 'admin/information_form.html'
+    edit_template = 'admin/information_form.html'
+    
+    localized_fields = [('title', 'Заголовок'), ('adress', 'Адрес'),]
+    form_extra_fields.update(extra_fields_generator(localized_fields))
+    
+    def after_model_change(self, form, model, is_created, localized_fields = localized_fields):
+        localization.after_model_change(self, form, model, is_created, localized_fields, 'information', model.info_id)
+
+    def on_form_prefill(self, form, id, localized_fields = localized_fields):  
+        localization.on_form_prefill(self, form, localized_fields, 'information', id)
+
+    def on_model_delete(self, model, localized_fields = localized_fields):
+        localization.on_model_delete(self, 'information', localized_fields, model.info_id)
+    
+    column_labels = dict(title = 'Заголовок', adress = 'Адрес', phone = 'Телефон', wifi = 'WiFi', wifi_password = 'Пароль WiFi',
+                         logo_thumb = 'Логотип', header_thumb = 'Шапка')
+    column_list = ('title', 'adress', 'phone', 'wifi', 'wifi_password', 'logo_thumb', 'header_thumb')
+    
+    form_overrides = {
+        'logo': FileUploadField,
+        'header_img': FileUploadField,
+    }
+    form_args = {
+        'logo': {
+            'label': 'Логотип сайта',
+            'base_path': 'menu_app/static/img/info',
+            'namegen': None 
+        },
+        'header_img': {
+            'label': 'Шапка',
+            'base_path': 'menu_app/static/img/info',
+            'namegen': None 
+        },
+    }
+    
+    def on_model_change(self, form, model, is_created):
+        for field in ['logo', 'header_img']:
+            if form[field].data:
+                # if photo is not changed, do nothing
+                if field == 'logo':
+                    if form[field].data == model.logo:
+                        return
+                else:
+                    if form[field].data == model.header_img:
+                        return
+
+                filename = secure_filename(form[field].data.filename)
+                # form.subcategory_photo.data.save(os.path.join(app.root_path, f'static/img/subcategories/', filename))
+
+                if field == 'logo':
+                    model.logo = 'static/img/info/' + filename
+                else:
+                    model.header_img = 'static/img/info/' + filename
+                    
+
+                if not is_created and form[field].object_data:
+                    old_filename = form[field].object_data
+                    if os.path.exists(os.path.join(app.root_path, old_filename)):
+                        os.remove(os.path.join(app.root_path, old_filename))
 
 admin = Admin(app, name='Панель администратора', template_mode='bootstrap4', index_view=MyAdminIndexView(), base_template='my_master.html', translations_path='./translations')
+admin.add_view(InformationView(Information, db.session, name="Информация"))
 admin.add_view(CategoryModelView(Category, db.session, name='Категории'))
 admin.add_view(SubcategoryModelView(Subcategory, db.session, name='Подкатегории'))
 admin.add_view(MenuItemModelView(MenuItem, db.session, name="Блюда"))

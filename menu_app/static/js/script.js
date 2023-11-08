@@ -1,15 +1,13 @@
 function get_subcategories(category_id) {
-    var test = category_id;
-    $("#subcategory-header").hide()
-    $.get("/categories", {category_id : category_id}
-    ).done(function(data) {
-        $(".menu-badge").removeClass("active")
+    $("#subcategory-header").hide();
+    $.get("/categories", { category_id : category_id }).done(function (data) {
+        $(".menu-badge").removeClass("active");
         $(`.menu-badge#${category_id}`).addClass("active")
         if (data['has_subcategories'] == false) {
             get_menu_items(null, null, category_id);
             return;
         }
-        $("#search").show()
+        $("#search").show();
         $("#content").empty();
         if (data['subcategories'].length == 0) {
             emptyResponseFallback();
@@ -28,19 +26,19 @@ function get_subcategories(category_id) {
     }
     
     function get_menu_items(subcategory_id = null, subcategory_name = null, category_id = null) {
-        $.get("/menu_items", {subcategory_id : subcategory_id, category_id : category_id}
+        $.get("/menu_items", { subcategory_id : subcategory_id, category_id : category_id }
         ).done(function (data) {
             if (category_id == null) {
-                $("#search").hide()
-                $("#subcategory-header").html(`<h2 class="d-flex flex-row gap-2" onclick="get_subcategories(${data['parent_category_id']})"><span class="bi-arrow-left-short fs-1" style="color:var(--website-secondary-color)"></span> ${subcategory_name}</h2>`)
-                $("#subcategory-header").show()
+                $("#search").hide();
+                $("#subcategory-header").html(`<h2 class="d-flex flex-row gap-2 align-items-center" onclick="get_subcategories(${data['parent_category_id']})"><span class="bi-arrow-left-short fs-1" style="color:var(--website-secondary-color)"></span> ${subcategory_name}</h2>`);
+                $("#subcategory-header").show();
             }
             else {
-                $("#search").show()
+                $("#search").show();
             }
-            $("#content").empty()
+            $("#content").empty();
             if (data['menu_items'].length == 0) {
-                emptyResponseFallback()
+                emptyResponseFallback();
             }
             data['menu_items'].forEach(menu_item => {
                 $("#content").append(
@@ -70,6 +68,16 @@ function get_subcategories(category_id) {
                 get_subcategories(data['category_id']);            
             });
             setCurrentLang();
+
+            let searchField = $('#search .search-field')[0]
+            switch (getCookie('lang')) {
+                case 'en': searchField.placeholder = 'Enter search query...';
+                break;
+                case 'tr': searchField.placeholder = 'Arama teriminizi girin...';
+                break;
+                case 'zh': searchField.placeholder = '输入您的搜索词';
+                break;
+            }
         });
         
         
@@ -88,10 +96,10 @@ function get_subcategories(category_id) {
                 description.addClass("_has-big-description");
             }
         }
-
+        
         function emptyResponseFallback(param) {
             $("#content").html(`<h5 class='text-center text-white mt-5'>На данный момент тут пусто :(</h5>
-                <a class='text-center' href='/'>Вернуться на главную</a>`)
+            <a class='text-center' href='/'>Вернуться на главную</a>`)
         }
         
         $("#location").attr("href", `https://yandex.ru/maps/?mode=search&text=${$("#location").text()}`);
@@ -101,10 +109,10 @@ function get_subcategories(category_id) {
         function openFullscreenImage(image) {
             var fullscreenImage = document.getElementById("fullscreenImage");
             var fullscreenImageSrc = document.getElementById("fullscreenImageSrc");
-        
+            
             fullscreenImageSrc.src = image.src;
             fullscreenImage.style.display = "block";
-        
+            
             setTimeout(function() {
                 fullscreenImage.classList.add("show");
                 fullscreenImageSrc.classList.add("show");
@@ -114,10 +122,10 @@ function get_subcategories(category_id) {
         function closeFullscreenImage() {
             var fullscreenImage = document.getElementById("fullscreenImage");
             var fullscreenImageSrc = document.getElementById("fullscreenImageSrc");
-        
+            
             fullscreenImage.classList.remove("show");
             fullscreenImageSrc.classList.remove("show");
-        
+            
             setTimeout(function() {
                 fullscreenImage.style.display = "none";
             }, 300);
@@ -133,24 +141,23 @@ function get_subcategories(category_id) {
                 });
             });
         }
-
+        
         function setCurrentLang() {
             var selector = document.querySelectorAll("#lang-select select")[0];
-            var currentLang = getCookie('lang')
+            var currentLang = getCookie('lang');
             selector.value = currentLang != null ? currentLang : 'ru';
         }
-
+        
         function handleLangChange() {
             var selector = document.querySelectorAll("#lang-select select")[0];
-            var lang = selector.options[selector.selectedIndex].value
-            // Set a session cookie with JavaScript
+            var lang = selector.options[selector.selectedIndex].value;
             document.cookie = `lang=${lang}; path=/; max-age=3600`;
-
-            location.reload()
+            
+            location.reload();
         }
-
+        
         function getCookie(name) {
             const value = `; ${document.cookie}`;
             const parts = value.split(`; ${name}=`);
             if (parts.length === 2) return parts.pop().split(';').shift();
-          }
+        }
