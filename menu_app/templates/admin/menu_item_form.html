@@ -1,0 +1,88 @@
+{% extends 'admin/model/edit.html' %}
+{% block body %}
+    {% block navlinks %}
+    {{super()}}
+    {%endblock%}
+    {%block edit_form %}
+    <div class="container" id="formContainer">
+    <ul class="nav nav-tabs mt-3" id="localeTabs">
+    <li class="nav-item">
+        <a class="nav-link active" data-toggle="tab" href="#main">Основные</a>
+    </li>
+    {# <span class="navbar-brand">Локализация</span> #}
+</ul>
+
+<div class="tab-content mt-3" id="localeTabContent">
+    <div class="tab-pane fade show active" id="main">
+        
+    </div>
+</div>
+    </div>
+    {{ super() }}
+
+    <style>
+        label[for=bindToCategory] {
+            display: inline-block !important;
+        }
+
+        #bindToSubcategory {
+            order: 2;
+        }
+        label[for=bindToSubcategory] {
+            order: 1;
+            display: inline-block !important;
+        }
+    </style>
+    <script src="/static/js/jquery.js"></script>
+    <script>
+    $(document).ready(function() {
+        var bindToCategoryCheckbox = $('#bindToCategory');
+        var bindToSubcategoryCheckbox = $('#bindToSubcategory');
+        var categoryField = $('#category_id');
+        var categoryLabel = $("label[for='category_id']")
+        var subcategoryLabel = $("label[for='subcategory_id']")
+        var subcategoryField = $('#subcategory_id');
+
+        // Изначально скрываем subcategory_id и устанавливаем bindToCategory в checked
+        subcategoryField.hide();
+        subcategoryLabel.hide();
+        bindToCategoryCheckbox.prop('checked', true);
+
+        // Обработка изменения состояния чекбокса bindToCategory
+        bindToCategoryCheckbox.change(function() {
+            if (bindToCategoryCheckbox.is(':checked')) {
+                categoryField.show();
+                categoryLabel.show();
+                subcategoryField.hide();
+                subcategoryLabel.hide();
+                bindToSubcategoryCheckbox.prop('checked', false);
+            }
+            else {
+                bindToSubcategoryCheckbox.prop('checked', true);
+                bindToSubcategoryCheckbox.trigger('change');
+
+            }
+        });
+
+        // Обработка изменения состояния чекбокса bindToSubcategory
+        bindToSubcategoryCheckbox.change(function() {
+            if (bindToSubcategoryCheckbox.is(':checked')) {
+                subcategoryField.show();
+                subcategoryLabel.show();
+                categoryField.hide();
+                categoryLabel.hide()
+                bindToCategoryCheckbox.prop('checked', false);
+            }
+            else {
+                bindToCategoryCheckbox.prop('checked', true);
+                bindToCategoryCheckbox.trigger('change');
+            }
+        });
+    });
+</script>
+<script src="/static/js/admin/locale-edit.js"></script>
+
+{% endblock %}
+
+
+{% endblock %}
