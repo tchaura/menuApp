@@ -36,3 +36,6 @@ def get_locale():
     return 'ru'
 
 babel = Babel(app, locale_selector = get_locale)
+
+with app.app_context():
+    db.create_all()
