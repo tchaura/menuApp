@@ -72,9 +72,15 @@ function get_subcategories(category_id) {
         
         $(document).ready(() => {
             $.get('/get_first_category_id').done(function (data) {
-                get_subcategories(data['category_id']);            
+                if (data['category_id']) {
+                    get_subcategories(data['category_id']);
+                }
             });
             setCurrentLang();
+
+            if (getCookie('lang') == null) {
+                document.cookie = `lang=ru; path=/; max-age=3600`;
+            }
             
             let searchField = $('#search .search-field')[0]
             switch (getCookie('lang')) {

@@ -11,7 +11,7 @@ from flask_admin.contrib import sqla
 from flask_admin import helpers, expose
 from werkzeug.security import generate_password_hash, check_password_hash
 from .models import db
-from menu_app import login_manager
+from . import login_manager
 
 
 # Create user model.

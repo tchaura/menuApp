@@ -43,10 +43,16 @@
         var subcategoryLabel = $("label[for='subcategory_id']")
         var subcategoryField = $('#subcategory_id');
 
-        // Изначально скрываем subcategory_id и устанавливаем bindToCategory в checked
-        subcategoryField.hide();
-        subcategoryLabel.hide();
-        bindToCategoryCheckbox.prop('checked', true);
+        if (bindToCategoryCheckbox.attr('default') == 'true') {
+            subcategoryField.hide();
+            subcategoryLabel.hide();
+            bindToCategoryCheckbox.prop('checked', true);
+        }
+        else {
+            categoryField.hide();
+            categoryLabel.hide();
+            bindToSubcategoryCheckbox.prop('checked', true);
+        }
 
         // Обработка изменения состояния чекбокса bindToCategory
         bindToCategoryCheckbox.change(function() {

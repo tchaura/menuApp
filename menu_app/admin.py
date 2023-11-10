@@ -12,7 +12,7 @@ from .login import MyAdminIndexView
 import flask_login as login
 from . import app
 from .models import Category, Information, Subcategory, MenuItem
-from menu_app import localization
+from . import localization
 from .localization import LANGUAGES, extra_fields_generator
 
 class SubcategoryNameFilter(FilterEqual):
@@ -131,6 +131,10 @@ class MenuItemModelView(ModelView):
         form = super().edit_form(obj)
         form.subcategory_id.choices = self.get_subcategory_choices()
         form.category_id.choices = self.get_category_choices()
+        if obj.category_id == 0:
+            form.bindToCategory.render_kw = {'default': 'false'}
+        else:
+            form.bindToCategory.render_kw = {'default': 'true'}
         return form
     
     def on_model_change(self, form, model, is_created):

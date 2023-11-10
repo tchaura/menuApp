@@ -1,8 +1,8 @@
-from menu_app import app
+from . import app
 from .localization import get_translated_model
 from flask_babel import refresh
 from flask import g, jsonify, request, session, redirect
-from menu_app.models import (Category, MenuItem, Subcategory)
+from .models import (Category, MenuItem, Subcategory)
 
 @app.route("/categories")
 def get_subcategories_json():
@@ -25,7 +25,8 @@ def get_subcategories_json():
 
 @app.route("/get_first_category_id")
 def get_first_category_id():
-    category_id = Category.query.first().category_id
+    first_category = Category.query.first()
+    category_id = first_category.category_id if first_category else 0
     return jsonify({'category_id' : category_id})
     
 
