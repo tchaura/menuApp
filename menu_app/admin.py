@@ -32,8 +32,8 @@ class MenuItemModelView(ModelView):
     def is_accessible(self):
         return login.current_user.is_authenticated
     
-    create_template = 'admin/menu_item_form.html'
-    edit_template = 'admin/menu_item_form.html'
+    create_template = 'admin/menu_item_form_create.html'
+    edit_template = 'admin/menu_item_form_edit.html'
 
     # Остальные настройки представления
 
