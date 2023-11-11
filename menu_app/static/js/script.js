@@ -1,8 +1,9 @@
 function get_subcategories(category_id) {
+    loadingSpinnerShow();
     $("#subcategory-header").hide();
+    $(".menu-badge").removeClass("active");
+    $(`.menu-badge#${category_id}`).addClass("active")
     $.get("/categories", { category_id : category_id }).done(function (data) {
-        $(".menu-badge").removeClass("active");
-        $(`.menu-badge#${category_id}`).addClass("active")
         if (data['has_subcategories'] == false) {
             get_menu_items(null, null, category_id);
             return;
@@ -15,7 +16,7 @@ function get_subcategories(category_id) {
         data['subcategories'].forEach(subcategory => {
             $("#content").append(
                 `<div class="subcategory">
-                <button class="sub-label" name="subcategory" onclick="get_menu_items(${subcategory['subcategory_id']}, '${subcategory['subcategory_name']}')" type="submit" style="background-image: url(${subcategory['subcategory_photo'] ? subcategory['subcategory_photo'] : ""});">
+                <button class="sub-label" name="subcategory" onclick="get_menu_items(${subcategory['subcategory_id']}, '${subcategory['subcategory_name']}')" type="submit" style="background-color: #484848; background-image: url(${subcategory['subcategory_photo'] ? subcategory['subcategory_photo'] : ""});">
                 <h2 style="position: relative;">${subcategory['subcategory_name']}</h2>
                 </button>
                 </div>`)
@@ -26,6 +27,7 @@ function get_subcategories(category_id) {
     }
     
     function get_menu_items(subcategory_id = null, subcategory_name = null, category_id = null) {
+        loadingSpinnerShow();
         $.get("/menu_items", { subcategory_id : subcategory_id, category_id : category_id }
         ).done((data) => displayMenuItems(data, category_id ? true : false, subcategory_name)).fail(function() {
             emptyResponseFallback();
@@ -37,6 +39,15 @@ function get_subcategories(category_id) {
         $.get('/search', {query: query}).done((data) => displayMenuItems(data, true)).fail(emptyResponseFallback())
     }
     
+    function loadingSpinnerShow() {
+        $("#content").empty();
+    $("#content").append(
+        `<div class="loadingio-spinner-rolling-sk0x4g1jti"><div class="ldio-0oeqvw1sd7zb">
+        <div></div>
+        </div></div>`
+    );
+    }
+
     function displayMenuItems(data, fromSearch = false, subcategory_name = null,) {
         if (fromSearch == false) {
             $("#search").hide();
@@ -53,7 +64,7 @@ function get_subcategories(category_id) {
         data['menu_items'].forEach(menu_item => {
             $("#content").append(
                 `<div class="menu-items" id="${menu_item['item_id']}">
-                <img src="${menu_item['item_photo']}">
+                <img class="menu-items-img" loading="lazy" src="${menu_item['item_photo']}">
                 <div class="d-flex justify-content-between align-items-center mb-1 flex-wrap">
                 <h2 class="menu-items-title mb-0">${menu_item['item_name']}</h2>
                 <span class="menu-items-weight">${menu_item['weight']} ${getCookie('lang') == 'ru' ? 'г.' : 'g.'}</span>

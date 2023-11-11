@@ -265,3 +265,6 @@ secret.txt
 menu_app/static/img/menu_items
 menu_app/static/img/subcategories
 menu_app.session.sql
+
+.vscode
+.DS_Store
