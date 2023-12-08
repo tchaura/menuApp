@@ -92,6 +92,13 @@ function get_subcategories(category_id) {
             if (getCookie('lang') == null) {
                 document.cookie = `lang=ru; path=/; max-age=3600`;
             }
+
+            
+
+            btn.on('click', function(e) {
+                e.preventDefault();
+                $('html, body').animate({scrollTop:0}, '100');
+              });
             
             let searchField = $('#search .search-field')[0]
             switch (getCookie('lang')) {
@@ -185,3 +192,13 @@ function get_subcategories(category_id) {
             const parts = value.split(`; ${name}=`);
             if (parts.length === 2) return parts.pop().split(';').shift();
         }
+
+        var btn = $('#scroll-top');
+        $(window).scroll(() => {
+            if ($(window).scrollTop() > 300) {
+                btn.show(200);
+            }
+            else {
+                btn.hide(200)
+            }
+        })

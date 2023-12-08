@@ -35,7 +35,7 @@ def after_model_change(self, form, model, is_created, localized_fields, model_na
                     else:
                         translation = Translation(**translation_attributes)
                         db.session.add(translation)
-                    db.session.commit()
+                db.session.commit()
                     
 def on_form_prefill(self, form, localized_fields, model_name, id):  
         for lang in LANGUAGES.keys():
