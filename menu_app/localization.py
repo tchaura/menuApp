@@ -1,6 +1,4 @@
-from dataclasses import field
-from sqlalchemy import Null
-from .models import Category, Translation
+from .models import Translation
 from . import db
 from . import app
 from wtforms import StringField

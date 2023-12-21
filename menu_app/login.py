@@ -1,9 +1,5 @@
 
-from ensurepip import bootstrap
-import os
-from flask import Flask, url_for, redirect, render_template, request
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Boolean, true
+from flask import url_for, redirect, request
 from wtforms import form, fields, validators
 import flask_admin as admin
 import flask_login as login

@@ -10,12 +10,13 @@ function get_subcategories(category_id) {
         }
         $("#search").show();
         $("#content").empty();
+        $("#content").addClass("row-cols-md-2");
         if (data['subcategories'].length == 0) {
             emptyResponseFallback();
         }
         data['subcategories'].forEach(subcategory => {
             $("#content").append(
-                `<div class="subcategory">
+                `<div class="subcategory col">
                 <button class="sub-label" name="subcategory" onclick="get_menu_items(${subcategory['subcategory_id']}, '${subcategory['subcategory_name']}')" type="submit" style="background-color: #484848; background-image: url(${subcategory['subcategory_photo'] ? subcategory['subcategory_photo'] : ""});">
                 <h2 style="position: relative;">${subcategory['subcategory_name']}</h2>
                 </button>
@@ -58,12 +59,13 @@ function get_subcategories(category_id) {
             $("#search").show();
         }
         $("#content").empty();
+        $("#content").addClass("row-cols-md-2");
         if (data['menu_items'].length == 0) {
             emptyResponseFallback();
         }
         data['menu_items'].forEach(menu_item => {
             $("#content").append(
-                `<div class="menu-items" id="${menu_item['item_id']}">
+                `<div class="menu-items col" id="${menu_item['item_id']}">
                 <img class="menu-items-img" loading="lazy" src="${menu_item['item_photo']}">
                 <div class="d-flex justify-content-between align-items-center mb-1 flex-wrap">
                 <h2 class="menu-items-title mb-0">${menu_item['item_name']}</h2>
@@ -129,8 +131,9 @@ function get_subcategories(category_id) {
         }
         
         function emptyResponseFallback(param) {
-            $("#content").html(`<h5 class='text-center text-white mt-5'>На данный момент тут пусто :(</h5>
-            <a class='text-center' href='/'>Вернуться на главную</a>`)
+            $("#content").removeClass("row-cols-md-2")
+            $("#content").html(`<div style="text-align: center"><h5 class='text-center text-white mt-5'>На данный момент тут пусто :(</h5><br>
+            <a class='text-center' href='/'>Вернуться на главную</a></div>`)
         }
         
         $("#location").attr("href", `https://yandex.ru/maps/?mode=search&text=${$("#location").text()}`);

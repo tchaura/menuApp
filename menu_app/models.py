@@ -1,8 +1,4 @@
 
-from ast import Sub
-from email.policy import default
-from nis import cat
-from flask_login import logout_user
 from flask_sqlalchemy import SQLAlchemy
 from markupsafe import Markup
 db = SQLAlchemy()
