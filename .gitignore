@@ -261,7 +261,18 @@ pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/flask,python
 
+# Start custom properties
 secret.txt
 menu_app/static/img/menu_items
 menu_app/static/img/subcategories
+menu_app/static/img/info
+menu_app/clean.sqlite
 menu_app.session.sql
+
+# Remove DS_Store
+.DS_Store
+
+# Remove VSCode config file
+launch.json
+
+# End custom properties
