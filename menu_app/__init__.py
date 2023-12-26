@@ -6,9 +6,6 @@ from .models import db
 from .models import MenuItem, Subcategory
 from .pillow import compress
 
-
-
-
 app = Flask(__name__)
 
 app.config['LANGUAGES'] = {
@@ -40,15 +37,19 @@ def get_locale():
 
 babel = Babel(app, locale_selector = get_locale)
 
+def compress_all():
+    # compress all photos in Subcategory and MenuItem
+    menu_items = MenuItem.query.all()
+    for item in menu_items:
+        if os.path.exists('menu_app/' + item.item_photo):
+            compress('menu_app/' + item.item_photo)
+    subcategories = Subcategory.query.all()
+    for item in subcategories:
+        if os.path.exists('menu_app/' + item.subcategory_photo):
+            compress('menu_app/' + item.subcategory_photo)
+
 with app.app_context():
     db.create_all()
     
-    # compress all photos in Subcategory and MenuItem
-    # menu_items = MenuItem.query.all()
-    # for item in menu_items:
-    #     if os.path.exists('menu_app/' + item.item_photo):
-    #         compress('menu_app/' + item.item_photo)
-    # subcategories = Subcategory.query.all()
-    # for item in subcategories:
-    #     if os.path.exists('menu_app/' + item.subcategory_photo):
-    #         compress('menu_app/' + item.subcategory_photo)
+    
+    
