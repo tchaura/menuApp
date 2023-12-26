@@ -12,8 +12,9 @@ from .login import MyAdminIndexView
 import flask_login as login
 from . import app
 from .models import Category, Information, Subcategory, MenuItem
-from menu_app import localization
+from . import localization
 from .localization import LANGUAGES, extra_fields_generator
+from .pillow import compress
 
 class SubcategoryNameFilter(FilterEqual):
     def apply(self, query, value):
@@ -32,8 +33,8 @@ class MenuItemModelView(ModelView):
     def is_accessible(self):
         return login.current_user.is_authenticated
     
-    create_template = 'admin/menu_item_form.html'
-    edit_template = 'admin/menu_item_form.html'
+    create_template = 'admin/menu_item_form_create.html'
+    edit_template = 'admin/menu_item_form_edit.html'
 
     # Остальные настройки представления
 
@@ -86,7 +87,7 @@ class MenuItemModelView(ModelView):
     }
     form_args = {
         'item_photo': {
-            'label': 'Фото блюда',
+            'label': 'Фото блюда (без русских символов в названии)',
             'base_path': 'menu_app/static/img/menu_items',
             'namegen': None 
         },
@@ -131,6 +132,10 @@ class MenuItemModelView(ModelView):
         form = super().edit_form(obj)
         form.subcategory_id.choices = self.get_subcategory_choices()
         form.category_id.choices = self.get_category_choices()
+        if obj.category_id == 0:
+            form.bindToCategory.render_kw = {'default': 'false'}
+        else:
+            form.bindToCategory.render_kw = {'default': 'true'}
         return form
     
     def on_model_change(self, form, model, is_created):
@@ -142,17 +147,21 @@ class MenuItemModelView(ModelView):
             model.category_id = 0
             
         if form.item_photo.data:
+            
             # if photo is not changed, do nothing
             if form.item_photo.data == model.item_photo:
                 return
             
             filename = secure_filename(form.item_photo.data.filename)
+            compress(os.path.join('menu_app/static/img/menu_items', form.item_photo.data.filename))
             # form.subcategory_photo.data.save(os.path.join(app.root_path, f'static/img/subcategories/', filename))
             
             model.item_photo = 'static/img/menu_items/' + filename
             
             if not is_created and form.item_photo.object_data:
                 old_filename = form.item_photo.object_data
+                if old_filename == model.item_photo:
+                    return
                 if os.path.exists(os.path.join(app.root_path, old_filename)):
                     os.remove(os.path.join(app.root_path, old_filename))
     
@@ -190,7 +199,7 @@ class SubcategoryModelView(ModelView):
     create_template = 'admin/subcategory_form.html'
     edit_template = 'admin/subcategory_form.html'
     
-    column_labels = dict(subcategory_name= 'Имя', subcategory_photo= 'Фото', category_name = 'Категория', photo_thumb = 'Фото')
+    column_labels = dict(subcategory_name= 'Имя', category_name = 'Категория', photo_thumb = 'Фото')
     column_list = ('subcategory_name', 'category_name', 'photo_thumb')
     
     # Helper methods
@@ -227,7 +236,7 @@ class SubcategoryModelView(ModelView):
     }
     form_args = {
         'subcategory_photo': {
-            'label': 'Фото подкатегории',
+            'label': 'Фото подкатегории (без русских символов в названии)',
             'base_path': 'menu_app/static/img/subcategories',
             'namegen': None 
         },
@@ -269,11 +278,15 @@ class SubcategoryModelView(ModelView):
             
             filename = secure_filename(form.subcategory_photo.data.filename)
             # form.subcategory_photo.data.save(os.path.join(app.root_path, f'static/img/subcategories/', filename))
+            compress(os.path.join('menu_app/static/img/subcategories', form.subcategory_photo.data.filename))
             
             model.subcategory_photo = 'static/img/subcategories/' + filename
             
+            
             if not is_created and form.subcategory_photo.object_data:
                 old_filename = form.subcategory_photo.object_data
+                if old_filename == model.subcategory_photo:
+                    return
                 if os.path.exists(os.path.join(app.root_path, old_filename)):
                     os.remove(os.path.join(app.root_path, old_filename))
                 
@@ -299,7 +312,7 @@ class InformationView(ModelView):
         localization.on_model_delete(self, 'information', localized_fields, model.info_id)
     
     column_labels = dict(title = 'Заголовок', adress = 'Адрес', phone = 'Телефон', wifi = 'WiFi', wifi_password = 'Пароль WiFi',
-                         logo_thumb = 'Логотип', header_thumb = 'Шапка')
+                         logo_thumb = 'Логотип (без русских символов в названии)', header_thumb = 'Шапка (без русских символов в названии)')
     column_list = ('title', 'adress', 'phone', 'wifi', 'wifi_password', 'logo_thumb', 'header_thumb')
     
     form_overrides = {
@@ -325,13 +338,13 @@ class InformationView(ModelView):
                 # if photo is not changed, do nothing
                 if field == 'logo':
                     if form[field].data == model.logo:
-                        return
+                        continue
                 else:
                     if form[field].data == model.header_img:
-                        return
+                        continue
 
                 filename = secure_filename(form[field].data.filename)
-                # form.subcategory_photo.data.save(os.path.join(app.root_path, f'static/img/subcategories/', filename))
+                compress(os.path.join('menu_app/static/img/info', form[field].data.filename))
 
                 if field == 'logo':
                     model.logo = 'static/img/info/' + filename
@@ -341,6 +354,12 @@ class InformationView(ModelView):
 
                 if not is_created and form[field].object_data:
                     old_filename = form[field].object_data
+                    if field == 'logo':
+                        if old_filename == model.logo:
+                            return
+                    else:
+                        if old_filename == model.header_img:
+                            return
                     if os.path.exists(os.path.join(app.root_path, old_filename)):
                         os.remove(os.path.join(app.root_path, old_filename))
 

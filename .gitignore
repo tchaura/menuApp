@@ -267,6 +267,7 @@ menu_app/static/img/menu_items
 menu_app/static/img/subcategories
 menu_app/static/img/info
 menu_app/clean.sqlite
+menu_app/db.sqlite
 menu_app.session.sql
 
 # Remove DS_Store
