@@ -39,14 +39,15 @@ def get_menu_items_json():
     
     if lang == 'ru':
         menu_items = MenuItem.query.filter(MenuItem.category_id == category_id if category_id else MenuItem.subcategory_id == subcategory_id)
-        menu_item_data = [{"item_id": item.item_id, "item_name": item.item_name, "price": item.price, "description": item.description, "ingredients": item.ingredients, "weight": item.weight, "item_photo": item.item_photo} for item in menu_items]  
-        return jsonify({ 'menu_items' : menu_item_data , 'parent_category_id' : parent_category_id})
+        menu_item_data = [{"item_id": item.item_id, "item_name": item.item_name, "price": item.price, "description": item.description, "ingredients": item.ingredients, "weight": item.weight, "item_photo": item.item_photo, "measure_unit": item.measure_unit} for item in menu_items]
+        return jsonify({'menu_items': menu_item_data, 'parent_category_id': parent_category_id})
 
     translated_model = get_translated_model(MenuItem, lang, 'item_id')
     if category_id:
         filtered_model = list(filter(lambda row: row['category_id'] == int(category_id), translated_model))
     else:
         filtered_model = list(filter(lambda row: row['subcategory_id'] == int(subcategory_id), translated_model))
+
     return jsonify({'menu_items': filtered_model, 'parent_category_id': parent_category_id})
 
 @app.route('/set_language/<lang>')

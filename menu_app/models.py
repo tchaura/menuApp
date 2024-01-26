@@ -32,13 +32,14 @@ class MenuItem(db.Model):
     __tablename__ = 'MenuItems'
     item_id = db.Column(db.Integer, primary_key=True)
     item_name = db.Column(db.String, nullable=False)
-    item_photo = db.Column(db.Text, nullable=False)
+    item_photo = db.Column(db.Text, nullable=True)
     price = db.Column(db.Float, nullable=False)
     description = db.Column(db.Text)
     ingredients = db.Column(db.Text)
-    weight = db.Column(db.Float)
+    weight = db.Column(db.String)
     subcategory_id = db.Column(db.Integer, db.ForeignKey('Subcategories.subcategory_id'))
     category_id = db.Column(db.Integer, db.ForeignKey('Categories.category_id'))
+    measure_unit = db.Column(db.Text)
     
     @property
     def photo_thumb(self):

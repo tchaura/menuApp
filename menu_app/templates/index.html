@@ -33,9 +33,9 @@
             <span class="text-nowrap d-flex info"><span class="bi-wifi info me-1"></span><span class="me-3" id="wifi">{{info['wifi']}}</span><span class="bi-key info me-1"></span><span id="wifi-password">{{info['wifi_password']}}</span></span>
         </div>
         <div id="menu" class="right-fade justify-content-center">
-            <div class="container pb-0 d-flex gap-2 pt-3">
+            <div class="container py-3 d-flex gap-2 pt-3">
                 {% for category in categories %}
-                <a id="{{ category['category_id'] }}" class="menu-badge" onclick="get_subcategories({{category['category_id']}})">{{category['category_name']}}</a>
+                <a id="{{ category['category_id'] }}" class="menu-badge" onclick="transitionTo(get_subcategories, {{category['category_id']}})">{{category['category_name']}}</a>
                 {% endfor %}
             </div>         
         </div>
