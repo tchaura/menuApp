@@ -35,6 +35,8 @@
     </style>
     <script src="/static/js/jquery.js"></script>
     <script>
+    let imageThumbnail = $(".image-thumbnail img")[0]
+    imageThumbnail.src = imageThumbnail.src.replace("/static/static", "/static")
     $(document).ready(function() {
         var bindToCategoryCheckbox = $('#bindToCategory');
         var bindToSubcategoryCheckbox = $('#bindToSubcategory');

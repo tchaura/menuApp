@@ -1,17 +1,20 @@
 let content = $("#content");
 
-async function get_subcategories(category_id) {
-    $("#subcategory-header").hide();
+function displayData(category_id, has_subcategories) {
     $(".menu-badge").removeClass("active");
     $(`.menu-badge#${category_id}`).addClass("active");
+    if (Boolean(has_subcategories)){
+        transitionTo(get_subcategories, category_id);
+    }
+    else {
+        transitionTo(get_menu_items, null, null, category_id);
+    }
+}
+
+async function get_subcategories(category_id) {
+    $("#subcategory-header").hide();
     await $.get("/categories", {category_id: category_id}).done(function (data) {
         content.empty();
-        // slows down loading of menu items
-        // TODO: remove double server request
-        if (data['has_subcategories'] === false) {
-            transitionTo(get_menu_items, null, null, category_id);
-            return;
-        }
         $("#search").show();
         content.addClass("row-cols-md-2");
         if (data['subcategories'].length === 0) {
@@ -38,7 +41,7 @@ async function get_menu_items(subcategory_id = null, subcategory_name = null, ca
 }
 
 function displayMenuItems(data, fromSearch = false, subcategory_name = null,) {
-    let areAllWithoutPhoto = data['menu_items'].every(menu_item => menu_item['item_photo'] == null);
+    let areAllWithoutPhoto = data['menu_items'].length ? data['menu_items'].every(menu_item => menu_item['item_photo'] == null || menu_item['item_photo'] === "") : false;
     let subcategoryHeader = $("#subcategory-header");
     let contentWrapper = $("#content-wrapper");
     if (fromSearch === false) {
@@ -53,6 +56,7 @@ function displayMenuItems(data, fromSearch = false, subcategory_name = null,) {
 
     if (data['menu_items'].length === 0) {
         responseFallback(getLocaleString(LOCALE_DICTS.EMPTY_RESPONSE));
+        return;
     }
     data['menu_items'].forEach(menu_item => {
         content.append(
@@ -266,12 +270,12 @@ const LOCALE_DICTS = {
         "zh": "输入您的搜索词",
     },
     MEASURE_UNIT_G: {
-        "default": "g.",
-        "ru": "г.",
+        "default": "g",
+        "ru": "г",
     },
     MEASURE_UNIT_ML: {
-        "default": "ml.",
-        "ru": "мл.",
+        "default": "ml",
+        "ru": "мл",
     }
 }
 

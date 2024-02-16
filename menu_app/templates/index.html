@@ -35,7 +35,7 @@
         <div id="menu" class="right-fade justify-content-center">
             <div class="container py-3 d-flex gap-2 pt-3">
                 {% for category in categories %}
-                <a id="{{ category['category_id'] }}" class="menu-badge" onclick="transitionTo(get_subcategories, {{category['category_id']}})">{{category['category_name']}}</a>
+                <a id="{{ category['category_id'] }}" class="menu-badge" onclick="displayData({{ category['category_id'] }}, {{ category['has_subcategories'] }})">{{category['category_name']}}</a>
                 {% endfor %}
             </div>         
         </div>

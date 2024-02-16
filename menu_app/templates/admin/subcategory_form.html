@@ -9,7 +9,6 @@
     <li class="nav-item">
         <a class="nav-link active" data-toggle="tab" href="#main">Основные</a>
     </li>
-    {# <span class="navbar-brand">Локализация</span> #}
 </ul>
 
 <div class="tab-content mt-3" id="localeTabContent">
@@ -20,6 +19,10 @@
     </div>
     {{ super() }}
     <script src="/static/js/jquery.js"></script>
+        <script>
+        let imageThumbnail = $(".image-thumbnail img")[0]
+        imageThumbnail.src = imageThumbnail.src.replace("/static/static", "/static")
+        </script>
     <script src="/static/js/admin/locale-edit.js"></script>
     {%endblock%}
 {%endblock%}

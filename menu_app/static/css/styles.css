@@ -207,7 +207,6 @@ body {
     height: calc(100%);
     width: 40px;
     pointer-events: none;
-    background: linear-gradient(90deg,#fff,hsla(0,0%,100%,0) 0,#fff);
     background: linear-gradient(90deg, rgba(255,255,255,0) 0%, var(--bg-color) 65%);
 }
 
@@ -292,7 +291,7 @@ body {
 }
 
 .menu-items-header span {
-    text-wrap: nowrap;
+    white-space: nowrap;
     flex-basis: 60px;
     text-align: end;
 }
@@ -529,8 +528,18 @@ footer {
     flex: 1;
     height: 20px;
     border-bottom: 3px dotted #3333;
+    flex-basis: 4rem;
 }
 
 .without-photo {
-    max-width: 40rem;
+    max-width: 50rem;
 }
+
+.without-photo .row {
+    row-gap: 3rem;
+}
+
+.without-photo .menu-items-title {
+    font-weight: normal;
+}
+

@@ -1,5 +1,6 @@
 
 from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy.query import Query
 from markupsafe import Markup
 db = SQLAlchemy()
 

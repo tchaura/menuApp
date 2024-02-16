@@ -4,7 +4,7 @@ import flask_login as login
 from flask_admin import Admin, expose
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.sqla.filters import FilterEqual
-from flask_admin.form.upload import FileUploadField
+from flask_admin.form.upload import FileUploadField, ImageUploadField
 from werkzeug.utils import secure_filename
 from wtforms import SelectField, BooleanField, TextAreaField
 
@@ -92,14 +92,14 @@ class MenuItemModelView(ModelView):
         return super(MenuItemModelView, self).index_view()
 
     form_overrides = {
-        'item_photo': FileUploadField,
+        'item_photo': ImageUploadField,
         'measure_unit': SelectField,
     }
     form_args = {
         'item_photo': {
             'label': 'Фото блюда (без русских символов в названии)',
             'base_path': 'menu_app/static/img/menu_items',
-            'namegen': None
+            'namegen': lambda obj, file_data: "temp" + os.path.splitext(file_data.filename)[1]
         },
         'measure_unit': {
             'label': 'Единица измерения',
@@ -168,12 +168,13 @@ class MenuItemModelView(ModelView):
             if form.item_photo.data == model.item_photo:
                 return
 
-            filename = secure_filename(form.item_photo.data.filename)
-            compress(os.path.join('menu_app/static/img/menu_items', form.item_photo.data.filename))
+            temp_path = os.path.join('menu_app/static/img/menu_items', secure_filename(form.item_photo.data.filename))
+            file_extension = os.path.splitext(temp_path)[1]
+            compress(temp_path)
             # form.subcategory_photo.data.save(os.path.join(app.root_path, f'static/img/subcategories/', filename))
+            os.rename(temp_path, os.path.join('menu_app/static/img/menu_items', str(model.item_id) + file_extension))
 
-            model.item_photo = 'static/img/menu_items/' + filename
-
+            model.item_photo = 'static/img/menu_items/' + str(model.item_id) + file_extension
             if not is_created and form.item_photo.object_data:
                 old_filename = form.item_photo.object_data
                 if old_filename == model.item_photo:
@@ -249,13 +250,13 @@ class SubcategoryModelView(ModelView):
 
     # Forms config
     form_overrides = {
-        'subcategory_photo': FileUploadField,
+        'subcategory_photo': ImageUploadField,
     }
     form_args = {
         'subcategory_photo': {
             'label': 'Фото подкатегории (без русских символов в названии)',
             'base_path': 'menu_app/static/img/subcategories',
-            'namegen': None
+            'namegen': lambda obj, file_data: "temp" + os.path.splitext(file_data.filename)[1]
         },
     }
     form_extra_fields = {
@@ -293,11 +294,12 @@ class SubcategoryModelView(ModelView):
             if form.subcategory_photo.data == model.subcategory_photo:
                 return
 
-            filename = secure_filename(form.subcategory_photo.data.filename)
-            # form.subcategory_photo.data.save(os.path.join(app.root_path, f'static/img/subcategories/', filename))
-            compress(os.path.join('menu_app/static/img/subcategories', form.subcategory_photo.data.filename))
+            temp_path = os.path.join('menu_app/static/img/subcategories', secure_filename(form.subcategory_photo.data.filename))
+            file_extension = os.path.splitext(temp_path)[1]
+            compress(temp_path)
+            os.rename(temp_path, os.path.join('menu_app/static/img/subcategories', str(model.subcategory_id) + file_extension))
 
-            model.subcategory_photo = 'static/img/subcategories/' + filename
+            model.item_photo = 'static/img/subcategories' + str(model.subcategory_id) + file_extension
 
             if not is_created and form.subcategory_photo.object_data:
                 old_filename = form.subcategory_photo.object_data
