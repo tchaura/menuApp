@@ -336,8 +336,8 @@ class InformationView(ModelView):
     column_list = ('title', 'adress', 'phone', 'wifi', 'wifi_password', 'logo_thumb', 'header_thumb')
 
     form_overrides = {
-        'logo': FileUploadField,
-        'header_img': FileUploadField,
+        'logo': ImageUploadField,
+        'header_img': ImageUploadField,
     }
     form_args = {
         'logo': {

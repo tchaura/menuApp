@@ -5,7 +5,7 @@
 
     <div>
         {% if current_user.is_authenticated %}
-        <h1>Панель администратора меню</h1>
+        <h1>{{ config['SITE_NAME'] }}</h1>
         <p class="lead">
             Добро пожаловать!
         </p>

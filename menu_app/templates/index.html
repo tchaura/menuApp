@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="static/css/styles.css">
     <script src="static/js/jquery.js"></script>
-    <title>Menu</title>
+    <title>{{ config['SITE_NAME'] }}</title>
 </head>
 <body class="">
 <div class="container header p-0">
@@ -17,7 +17,6 @@
         <img src="{{info['logo']}}" class="header-logo d-block position-relative">
         <div id="lang-select">
             <select onchange="handleLangChange()">
-                <option value="ru">Русский</option>
             {% for key, value in config['LANGUAGES'].items() %}
                 <option value="{{key}}">{{value}}</option>
             {%endfor%}
@@ -30,10 +29,10 @@
         <div class="container d-flex d-md-none flex-wrap position-relative gap-2 justify-content-center restaurant-info" style="padding: 0 2rem">
             <span class="info"><span class="bi-geo-alt me-1"></span><a id="location" class="info">{{info['adress']}}</a></span>
             <span class="info"><span class="bi-telephone me-1"></span> <a id="phone-number" class="info">{{info['phone']}}</a></span>
-            <span class="text-nowrap d-flex info"><span class="bi-wifi info me-1"></span><span class="me-3" id="wifi">{{info['wifi']}}</span><span class="bi-key info me-1"></span><span id="wifi-password">{{info['wifi_password']}}</span></span>
+            <span class="text-nowrap d-flex info"><span class="bi-wifi info me-1"></span><span class="me-3" id="wifi">{{info['wifi']}}</span>{% if info['wifi_password'] %}<span class="bi-key info me-1"></span><span id="wifi-password">{{info['wifi_password']}}</span>{% endif %}</span>
         </div>
         <div id="menu" class="right-fade justify-content-center">
-            <div class="container py-3 d-flex gap-2 pt-3">
+            <div class="container py-3 d-flex gap-3 pt-3">
                 {% for category in categories %}
                 <a id="{{ category['category_id'] }}" class="menu-badge" onclick="displayData({{ category['category_id'] }}, {{ category['has_subcategories'] }})">{{category['category_name']}}</a>
                 {% endfor %}

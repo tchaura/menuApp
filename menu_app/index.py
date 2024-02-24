@@ -1,6 +1,6 @@
 import datetime
 from flask import (
-    Blueprint, render_template, request
+    render_template, request
 )
 
 from .models import (Category, Information, Translation)
@@ -13,7 +13,7 @@ def index():
     info = Information.query.first()
     categories = Category.query.all()
     lang = request.cookies.get('lang')
-    if lang == 'ru' or not lang:
+    if lang == app.config['DEFAULT_LANG'] or not lang:
         return render_template("subcategories.html", categories = categories, info = info, year = datetime.date.today().year)
     
     translated_categories = get_translated_model(Category, lang)

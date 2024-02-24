@@ -23,9 +23,11 @@ async function get_subcategories(category_id) {
         data['subcategories'].forEach(subcategory => {
             content.append(
                 `<div class="subcategory col">
+                        <div class="subcategory-wrapper">
                         <button class="sub-label" name="subcategory" onclick="transitionTo(get_menu_items, ${subcategory['subcategory_id']}, '${subcategory['subcategory_name']}')" type="submit" style="background-color: #484848; background-image: url(${subcategory['subcategory_photo'] ? subcategory['subcategory_photo'] : ""});">
                         <h2 style="position: relative;">${subcategory['subcategory_name']}</h2>
                         </button>
+                        </div>
                         </div>`);
         });
     }).fail(function () {
@@ -61,18 +63,18 @@ function displayMenuItems(data, fromSearch = false, subcategory_name = null,) {
     data['menu_items'].forEach(menu_item => {
         content.append(
             `<div class="menu-items col" id="${menu_item['item_id']}">
-                            ${menu_item['item_photo'] ? `<img class="menu-items-img" loading="lazy" src="${menu_item['item_photo']}" alt="Menu Item"/>`: (areAllWithoutPhoto ? '' : `<div class="menu-items-img"></div>`)}
-                            <div class="menu-items-header d-flex justify-content-between align-items-center mb-1">
-                            <h2 class="menu-items-title mb-0">${menu_item['item_name']}</h2>
-                            ${menu_item['weight'] ? `<div class="dots"></div> <span class="menu-items-weight">${menu_item['weight']} ${getLocaleString(menu_item['measure_unit'] === 'g' ? LOCALE_DICTS.MEASURE_UNIT_G : LOCALE_DICTS.MEASURE_UNIT_ML)}</span>` : ""}
-                            </div>
-                            ${menu_item['description'] ? `<div class="menu-items-description" onclick="expandCropText(${menu_item['item_id']});"><p>${menu_item['description']}</p></div>` : ""}
-                            ${menu_item['ingredients'] ? `<span class="menu-items-ingredients fst-italic">Состав: ${menu_item['ingredients']}</span>` : ""}
-                            <div class="my-2"></div>
-                            <h3 class="menu-items-price">
-                            ${menu_item['price']} ${getCookie('lang') === 'ru' ? 'р.' : 'Br'}
-                            </h3>
-                            </div>`
+             ${menu_item['item_photo'] ? `<div class="menu-items-img-wrapper"><img class="menu-items-img" loading="lazy" src="${menu_item['item_photo']}" alt="Menu Item"/></div>`: (areAllWithoutPhoto ? '' : `<div class="menu-items-img-wrapper"><div class="menu-items-img"></div></div>`)}
+             <div class="menu-items-header d-flex justify-content-between align-items-center mb-1">
+             <h2 class="menu-items-title mb-0">${menu_item['item_name']}</h2>
+             ${menu_item['weight'] ? `<div class="dots"></div> <span class="menu-items-weight">${menu_item['weight']} ${getLocaleString(menu_item['measure_unit'] === 'g' ? LOCALE_DICTS.MEASURE_UNIT_G : LOCALE_DICTS.MEASURE_UNIT_ML)}</span>` : ""}
+             </div>
+             ${menu_item['description'] ? `<div class="menu-items-description" onclick="expandCropText(${menu_item['item_id']});"><p>${menu_item['description']}</p></div>` : ""}
+             ${menu_item['ingredients'] ? `<span class="menu-items-ingredients fst-italic">${ getLocaleString(LOCALE_DICTS.INGREDIENTS) + ": " + menu_item['ingredients']}</span>` : ""}
+             <div class="my-2"></div>
+             <h3 class="menu-items-price">
+             ${menu_item['price']} ${getLocaleString(LOCALE_DICTS.CURRENCY)}
+             </h3>
+             </div>`
         )
         expandCropText(menu_item['item_id']);
         bindImageClick();
@@ -107,10 +109,6 @@ $(document).ready(() => {
         responseFallback(getLocaleString(LOCALE_DICTS.EMPTY_RESPONSE));
     }
     setCurrentLang();
-
-    if (getCookie('lang') == null) {
-        document.cookie = `lang=ru; path=/; max-age=3600`;
-    }
 
 
     btn.on('click', function (e) {
@@ -191,8 +189,11 @@ function bindImageClick() {
 
 function setCurrentLang() {
     let selector = document.querySelector("#lang-select select");
-    let currentLang = getCookie('lang');
-    selector.value = currentLang != null ? currentLang : 'ru';
+    let langCookie = getCookie('lang');
+    let currentLang = langCookie == null ? "en" : langCookie;
+    selector.value = currentLang != null ? currentLang : 'en';
+
+    document.cookie = `lang=${currentLang}; path=/; max-age=3600`;
 }
 
 function handleLangChange() {
@@ -242,32 +243,32 @@ function getLocaleString(localeDict) {
 
 const LOCALE_DICTS = {
     EMPTY_RESPONSE: {
-        "default": "Похоже, тут пусто",
+        "default": "Looks like there's nothing here",
         "ru": "Похоже, тут пусто",
-        "en": "Looks like there's nothing here",
         "tr": "Boş gibi görünüyor",
-        "zh": "看起来是空的",
+        "ge": "ეს ნიშნავს, რომ აქ არაფერია",
+        "he": "נראה שאין כאן כלום",
     },
     NETWORK_ERROR: {
-        "default": "Проблемы с соединением",
+        "default": "Connection error",
         "ru": "Проблемы с соединением",
-        "en": "Connection error",
         "tr": "Bağlantı sorunları",
-        "zh": "连接问题",
+        "ge": "კავშირის შეფერხება",
+        "he": "שגיאת חיבור",
     },
     RETURN_TO_MAIN: {
-        "default": "Вернуться на главную",
+        "default": "Back to main page",
         "ru": "Вернуться на главную",
-        "en": "Back to main page",
         "tr": "Ana Sayfaya Geri Dön",
-        "zh": "返回首页",
+        "ge": "უკან დაბრუნება მთავარ გვერდზე",
+        "he": "חזור לעמוד הראשי",
     },
     SEARCH_PLACEHOLDER: {
-        "default": "Введите запрос для поиска...",
-        "ru": "Введите запрос для поиска...",
-        "en": "Enter search query...",
+        "default": "Search...",
+        "ru": "Поиск...",
         "tr": "Arama teriminizi girin...",
-        "zh": "输入您的搜索词",
+        "ge": "ძიება...",
+        "he": "חיפוש...",
     },
     MEASURE_UNIT_G: {
         "default": "g",
@@ -276,8 +277,19 @@ const LOCALE_DICTS = {
     MEASURE_UNIT_ML: {
         "default": "ml",
         "ru": "мл",
+    },
+    CURRENCY: {
+        "default": '₾'
+    },
+    INGREDIENTS: {
+        "default": "Ingredients",
+        "ru": "Состав",
+        "ge": "Συστατικά",
+        "tr": "İçindekiler",
+        "he": "רכיבים"
     }
-}
+};
+
 
 function loadingSpinnerShow() {
     content.prepend(

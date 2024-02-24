@@ -2,9 +2,11 @@ from .models import Translation
 from . import db
 from . import app
 from wtforms import StringField
+from copy import copy
 
-LANGUAGES = app.config.get('LANGUAGES')
-LANGUAGES.pop('ru')
+LANGUAGES = copy(app.config['LANGUAGES'])
+# primary lang to exclude from additional lang tabs
+LANGUAGES.pop(app.config.get('DEFAULT_LANG'))
 
 
 def after_model_change(self, form, model, is_created, localized_fields, model_name, id):

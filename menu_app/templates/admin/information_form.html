@@ -9,7 +9,7 @@
     <li class="nav-item">
         <a class="nav-link active" data-toggle="tab" href="#main">Основные</a>
     </li>
-    {# <span class="navbar-brand">Локализация</span> #}
+
 </ul>
 
 <div class="tab-content mt-3" id="localeTabContent">
@@ -21,11 +21,12 @@
     {{ super() }}
     <script src="/static/js/jquery.js"></script>
     <script>
+        document.querySelectorAll(".image-thumbnail img").forEach(imageThumbnail => imageThumbnail.src = imageThumbnail.src.replace("/static/static", "/static"))
     $('#formContainer').prependTo($('form.admin-form'))
-    var langValues = new Set();
+    let langValues = new Set();
 
     $("div.form-group input[lang]").each(function() {
-        var langValue = $(this).attr("lang");
+        let langValue = $(this).attr("lang");
         langValues.add(langValue)
         $(this).closest("div.form-group").attr({'id' : langValue});
         $(this).closest("div.form-group").addClass('locale');

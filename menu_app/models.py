@@ -86,7 +86,7 @@ class Information(db.Model):
     adress = db.Column(db.String(100), nullable = False)
     phone = db.Column(db.String(100), nullable = False)
     wifi = db.Column(db.String(100), nullable = False)
-    wifi_password = db.Column(db.String(100), nullable = False)
+    wifi_password = db.Column(db.String(100), nullable = True)
     
     @property
     def logo_thumb(self):

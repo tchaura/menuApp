@@ -3,17 +3,21 @@ from flask_babel import Babel
 from flask_login import LoginManager
 import os
 from .models import db
-from .models import MenuItem, Subcategory
+from .models import MenuItem, Subcategory, Information
 from .pillow import compress
 
 app = Flask(__name__)
 
+# first lang is the primary
 app.config['LANGUAGES'] = {
     'en': 'English',
-    'ru': 'Русский',
+    'ge': 'ქართული',
     'tr': 'Türkçe',
-    'zh': '中文'
+    'he': 'עִברִית',
+    'ru': 'Русский',
 }
+
+app.config['DEFAULT_LANG'] = list(app.config['LANGUAGES'].keys())[0]
 login_manager = LoginManager(app)
 from . import admin
 from . import localization
@@ -33,7 +37,7 @@ db.init_app(app)
 
 
 def get_locale():
-    return 'ru'
+    return app.config['DEFAULT_LANG']
 
 
 babel = Babel(app, locale_selector=get_locale)
@@ -91,5 +95,6 @@ def rename_file(item, renamed_files):
 
 
 with app.app_context():
+    app.config['SITE_NAME'] = Information.query.first().title
     # rename_static_files()
     db.create_all()
