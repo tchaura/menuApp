@@ -12,7 +12,7 @@ function displayData(category_id, has_subcategories) {
 }
 
 async function get_subcategories(category_id) {
-    $("#subcategory-header").hide();
+    $("#subcategory-header-wrapper").hide();
     await $.get("/categories", {category_id: category_id}).done(function (data) {
         content.empty();
         $("#search").show();
@@ -22,12 +22,12 @@ async function get_subcategories(category_id) {
         }
         data['subcategories'].forEach(subcategory => {
             content.append(
-                `<div class="subcategory col">
+                `<div class="subcategory col" onclick="transitionTo(get_menu_items, ${subcategory['subcategory_id']}, '${subcategory['subcategory_name']}')">
                         <div class="subcategory-wrapper">
-                        <button class="sub-label" name="subcategory" onclick="transitionTo(get_menu_items, ${subcategory['subcategory_id']}, '${subcategory['subcategory_name']}')" type="submit" style="background-color: #484848; background-image: url(${subcategory['subcategory_photo'] ? subcategory['subcategory_photo'] : ""});">
-                        <h2 style="position: relative;">${subcategory['subcategory_name']}</h2>
-                        </button>
+                        <img alt="Subcategory Photo" class="subcategory-photo" src="${subcategory['subcategory_photo'] ? subcategory['subcategory_photo'] : ""}"
+                        style="background-color: #484848;"/>
                         </div>
+                        <span class="subcategory-header">${subcategory['subcategory_name']}</span>
                         </div>`);
         });
     }).fail(function () {
@@ -44,13 +44,13 @@ async function get_menu_items(subcategory_id = null, subcategory_name = null, ca
 
 function displayMenuItems(data, fromSearch = false, subcategory_name = null,) {
     let areAllWithoutPhoto = data['menu_items'].length ? data['menu_items'].every(menu_item => menu_item['item_photo'] == null || menu_item['item_photo'] === "") : false;
-    let subcategoryHeader = $("#subcategory-header");
+    let subcategoryHeaderWrapper = $("#subcategory-header-wrapper");
     let contentWrapper = $("#content-wrapper");
     if (fromSearch === false) {
         $("#search").hide();
-        subcategoryHeader.html(
-            `<h2 class="d-flex flex-row gap-2 align-items-center" onclick="transitionTo(get_subcategories, ${data['parent_category_id']})"><span class="bi-arrow-left-short fs-1" style="color:var(--website-secondary-color)"></span> ${subcategory_name}</h2>`);
-        subcategoryHeader.show();
+        subcategoryHeaderWrapper.html(
+            `<h2 id="subcategory-header" class="d-flex flex-row gap-2 align-items-center" onclick="transitionTo(get_subcategories, ${data['parent_category_id']})"><span class="bi-arrow-left-short fs-1" style="color:var(--website-secondary-color)"></span> ${subcategory_name}</h2>`);
+        subcategoryHeaderWrapper.show();
     } else {
         $("#search").show();
     }
@@ -86,7 +86,7 @@ function displayMenuItems(data, fromSearch = false, subcategory_name = null,) {
         dots.addClass("d-block");
         content.removeClass("row-cols-md-2");
         contentWrapper.addClass("without-photo");
-        subcategoryHeader.addClass("without-photo");
+        subcategoryHeaderWrapper.addClass("without-photo");
 
     }
     else {
@@ -219,17 +219,21 @@ $(window).scroll(() => {
 });
 
 function transitionTo(func, ...args) {
-    let subcategoryHeader = $("#subcategory-header");
+    let subcategoryHeaderWrapper = $("#subcategory-header-wrapper");
     let contentWrapper = $("#content-wrapper");
-    window.scrollTo({top: 0, left: 0});
+    let footer = $("footer");
+    // TODO: fix scroll behavior
+    // window.scrollTo({top: 0, left: 0, behavior: "smooth"})
     content.fadeOut(200, () => {
+        footer.hide();
         content.empty();
         loadingSpinnerShow();
         contentWrapper.removeClass("without-photo");
-        subcategoryHeader.removeClass("without-photo");
+        subcategoryHeaderWrapper.removeClass("without-photo");
         content.fadeIn(200, () => {
             func(...args).then(() => {
                 content.fadeOut(0)
+                footer.show();
                 content.fadeIn(200)
             })
         });

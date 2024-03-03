@@ -10,58 +10,61 @@
     <title>{{ config['SITE_NAME'] }}</title>
 </head>
 <body class="">
-<div class="container header p-0">
-        <div class="header-background" style="height: var(--header-img-height); object-fit: cover; overflow:hidden;">
+
+<div id="header-wrapper">
+    <div class="container header p-0">
+        <div class="header-background">
             <img src="{{ info['header_img'] }}" class="header-img" width="100%" height="100%" alt="header-img">
         </div>
         <img src="{{info['logo']}}" class="header-logo d-block position-relative">
         <div id="lang-select">
             <select onchange="handleLangChange()">
-            {% for key, value in config['LANGUAGES'].items() %}
-                <option value="{{key}}">{{value}}</option>
-            {%endfor%}
+                {% for key, value in config['LANGUAGES'].items() %}
+                    <option value="{{key}}">{{ key }}</option>
+                {%endfor%}
             </select>
         </div>
         <div class="container title-container">
             <h1 class="title">{{info['title']}}</h1>
         </div>
-        </div>
-        <div class="container d-flex d-md-none flex-wrap position-relative gap-2 justify-content-center restaurant-info" style="padding: 0 2rem">
-            <span class="info"><span class="bi-geo-alt me-1"></span><a id="location" class="info">{{info['adress']}}</a></span>
-            <span class="info"><span class="bi-telephone me-1"></span> <a id="phone-number" class="info">{{info['phone']}}</a></span>
-            <span class="text-nowrap d-flex info"><span class="bi-wifi info me-1"></span><span class="me-3" id="wifi">{{info['wifi']}}</span>{% if info['wifi_password'] %}<span class="bi-key info me-1"></span><span id="wifi-password">{{info['wifi_password']}}</span>{% endif %}</span>
-        </div>
-        <div id="menu" class="right-fade justify-content-center">
-            <div class="container py-3 d-flex gap-3 pt-3">
-                {% for category in categories %}
-                <a id="{{ category['category_id'] }}" class="menu-badge" onclick="displayData({{ category['category_id'] }}, {{ category['has_subcategories'] }})">{{category['category_name']}}</a>
-                {% endfor %}
-            </div>         
-        </div>
-        
-        <div class="container pt-2" id="search">
-                <div class="search d-flex justify-content-between">  
-                    <input id="search-input" type="search" class="search-field form-control" placeholder="Введите запрос для поиска..." style="appearance: none;">
-                    <a type="submit" onclick="searchData()"><span class="bi-search btn btn-primary rounded-5"></span></a>
-                </div>
-        </div>
-        <div class="container pt-2" id="subcategory-header">
-            
-        </div>
-        
-        {% block content %}
-            
-        {% endblock %}
-        
-        <div id="scroll-top"><span class="bi-chevron-up"></span></div>
-        <footer>
-        <div class="mt-5 pb-2 text-center">
-            © {{year}} {{info['title']}}
-           
+    </div>
+    <div class="container d-flex flex-wrap position-relative gap-2 justify-content-center restaurant-info" style="padding: 0 2rem">
+        <span class="info"><span class="bi-geo-alt me-1"></span><a id="location" class="info">{{info['adress']}}</a></span>
+        <span class="info"><span class="bi-telephone me-1"></span> <a id="phone-number" class="info">{{info['phone']}}</a></span>
+        <span class="text-nowrap d-flex info"><span class="bi-wifi info me-1"></span><span class="me-3" id="wifi">{{info['wifi']}}</span>{% if info['wifi_password'] %}<span class="bi-key info me-1"></span><span id="wifi-password">{{info['wifi_password']}}</span>{% endif %}</span>
+    </div>
+</div>
+<div id="menu" class="right-fade justify-content-center">
+    <div class="container py-3 d-flex gap-3 pt-3">
+        {% for category in categories %}
+            <a id="{{ category['category_id'] }}" class="menu-badge" onclick="displayData({{ category['category_id'] }}, {{ category['has_subcategories'] }})">{{category['category_name']}}</a>
+        {% endfor %}
+    </div>
+</div>
 
+<div class="search-wrapper">
+    <div class="container pb-3" id="search">
+        <div class="search d-flex justify-content-between">
+            <input id="search-input" type="search" class="search-field form-control" placeholder="Введите запрос для поиска..." style="appearance: none;">
+            <a type="submit" onclick="searchData()"><span class="bi-search btn btn-primary rounded-5"></span></a>
         </div>
-        </footer>
-    <div id="fullscreenImage">
+    </div>
+</div>
+<div class="container pt-3" id="subcategory-header-wrapper"></div>
+
+{% block content %}
+
+{% endblock %}
+
+<div id="scroll-top"><span class="bi-chevron-up"></span></div>
+<footer>
+    <div class="mt-5 pb-2 text-center">
+        © {{year}} {{info['title']}}
+
+
+    </div>
+</footer>
+<div id="fullscreenImage">
     <img id="fullscreenImageSrc">
     <span id="closeFullscreen" onclick="closeFullscreenImage()" class="bi-x"></span>
 </div>
