@@ -95,6 +95,6 @@ def rename_file(item, renamed_files):
 
 
 with app.app_context():
-    app.config['SITE_NAME'] = Information.query.first().title
     # rename_static_files()
     db.create_all()
+

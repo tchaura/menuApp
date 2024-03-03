@@ -11,6 +11,8 @@ from . import app
 @app.route("/", methods = ['GET', 'POST'])
 def index():
     info = Information.query.first()
+    if info:
+        app.config['SITE_NAME'] = Information.query.first().title
     categories = Category.query.all()
     lang = request.cookies.get('lang')
     if lang == app.config['DEFAULT_LANG'] or not lang:

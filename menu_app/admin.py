@@ -256,7 +256,8 @@ class SubcategoryModelView(ModelView):
         'subcategory_photo': {
             'label': 'Фото подкатегории (без русских символов в названии)',
             'base_path': 'menu_app/static/img/subcategories',
-            'namegen': lambda obj, file_data: "temp" + os.path.splitext(file_data.filename)[1]
+            'namegen': lambda obj, file_data: "temp" + os.path.splitext(file_data.filename)[1],
+
         },
     }
     form_extra_fields = {
@@ -299,7 +300,7 @@ class SubcategoryModelView(ModelView):
             compress(temp_path)
             os.rename(temp_path, os.path.join('menu_app/static/img/subcategories', str(model.subcategory_id) + file_extension))
 
-            model.item_photo = 'static/img/subcategories' + str(model.subcategory_id) + file_extension
+            model.subcategory_photo = 'static/img/subcategories/' + str(model.subcategory_id) + file_extension
 
             if not is_created and form.subcategory_photo.object_data:
                 old_filename = form.subcategory_photo.object_data
