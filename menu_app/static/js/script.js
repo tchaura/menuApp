@@ -222,8 +222,6 @@ function transitionTo(func, ...args) {
     let subcategoryHeaderWrapper = $("#subcategory-header-wrapper");
     let contentWrapper = $("#content-wrapper");
     let footer = $("footer");
-    // TODO: fix scroll behavior
-    // window.scrollTo({top: 0, left: 0, behavior: "smooth"})
     content.fadeOut(200, () => {
         footer.hide();
         content.empty();
