@@ -78,14 +78,14 @@ def extra_fields_generator(localized_fields):
 def get_translated_model(reference_model, lang, id_row_name=None):
     translations = Translation.query.filter(Translation.language_code == lang,
                                             Translation.reference_table == reference_model.__tablename__)
-
     translated_model = []
     rows = db.session.query(reference_model).all()
     reference_fields = [column.key for column in reference_model.__table__.columns]
 
     for row in rows:
-        row_id = getattr(row, id_row_name if id_row_name else f'{row.__class__.__name__.lower()}_id')
-        modified_row = {}
+        id_row_name = id_row_name if id_row_name else f'{row.__class__.__name__.lower()}_id'
+        row_id = getattr(row, id_row_name)
+        modified_row = {id_row_name: row_id}
         for field in reference_fields:
             translation = translations.filter(Translation.reference_field == field,
                                               Translation.reference_id == row_id).first()
@@ -94,3 +94,8 @@ def get_translated_model(reference_model, lang, id_row_name=None):
         translated_model.append(modified_row)
 
     return translated_model
+
+
+def get_translated_row(row_id, reference_model, lang, id_row_name=None):
+    translated_model = get_translated_model(reference_model, lang, id_row_name)
+    return list(filter(lambda row: row[id_row_name] == row_id, translated_model))[0]

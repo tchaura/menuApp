@@ -98,23 +98,24 @@ class MyAdminIndexView(admin.AdminIndexView):
     @expose('/login/', methods=('GET', 'POST'))
     def login_view(self):
         # handle user login
+        if not user_exists():
+            return redirect(url_for('.register_view'))
+
+        if login.current_user.is_authenticated:
+            return redirect(url_for('.index'))
+
         form = LoginForm(request.form)
         if helpers.validate_form_on_submit(form):
             user = form.get_user()
             login.login_user(user)
-
-        if login.current_user.is_authenticated:
-            return redirect(url_for('.index'))
-        if not user_exists():
-            link = '<p>Don\'t have an account? <a href="' + url_for('.register_view') + '">Click here to register.</a></p>'
-            self._template_args['link'] = link
-            
-            
         self._template_args['form'] = form
         return super(MyAdminIndexView, self).index()
 
     @expose('/register/', methods=('GET', 'POST'))
     def register_view(self):
+
+        if user_exists():
+            return redirect(url_for('.login_view'))
         
         form = RegistrationForm(request.form)
         if helpers.validate_form_on_submit(form):

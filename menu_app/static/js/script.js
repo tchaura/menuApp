@@ -1,20 +1,28 @@
 let content = $("#content");
+let lastState = {}
+const btn = $('#scroll-top');
+btn.on('click', function (e) {
+    e.preventDefault();
+    $('html, body').animate({scrollTop: 0}, 100);
+});
 
-function displayData(category_id, has_subcategories) {
+function handleCategoryClick(category_id, has_subcategories) {
+    lastState.category_id = category_id;
+
     $(".menu-badge").removeClass("active");
-    $(`.menu-badge#${category_id}`).addClass("active");
+    $(`#category-${category_id}`).addClass("active");
     if (Boolean(has_subcategories)){
         transitionTo(get_subcategories, category_id);
     }
     else {
-        transitionTo(get_menu_items, null, null, category_id);
+        transitionTo(get_menu_items, null, category_id);
     }
 }
 
 async function get_subcategories(category_id) {
     $("#subcategory-header-wrapper").hide();
+    content.empty();
     await $.get("/categories", {category_id: category_id}).done(function (data) {
-        content.empty();
         $("#search").show();
         content.addClass("row-cols-md-2");
         if (data['subcategories'].length === 0) {
@@ -22,10 +30,9 @@ async function get_subcategories(category_id) {
         }
         data['subcategories'].forEach(subcategory => {
             content.append(
-                `<div class="subcategory col" onclick="transitionTo(get_menu_items, ${subcategory['subcategory_id']}, '${subcategory['subcategory_name']}')">
+                `<div class="subcategory col" onclick="transitionTo(get_menu_items, ${subcategory['subcategory_id']})">
                         <div class="subcategory-wrapper">
-                        <img alt="Subcategory Photo" class="subcategory-photo" src="${subcategory['subcategory_photo'] ? subcategory['subcategory_photo'] : ""}"
-                        style="background-color: #484848;"/>
+                        <img alt="" loading="lazy" class="subcategory-photo" src="${subcategory['subcategory_photo']}" onerror="this.src = 'static/img/util/food-tray.png'; this.classList.add('fallback')" />
                         </div>
                         <span class="subcategory-header">${subcategory['subcategory_name']}</span>
                         </div>`);
@@ -35,24 +42,24 @@ async function get_subcategories(category_id) {
     });
 }
 
-async function get_menu_items(subcategory_id = null, subcategory_name = null, category_id = null) {
+async function get_menu_items(subcategory_id = null, category_id = null) {
     await $.get("/menu_items", {subcategory_id: subcategory_id, category_id: category_id}
-    ).done((data) => displayMenuItems(data, !!category_id, subcategory_name)).fail(function () {
+    ).done((data) => displayMenuItems(data, !!category_id)).fail(function () {
         responseFallback(getLocaleString(LOCALE_DICTS.NETWORK_ERROR));
     });
 }
 
-function displayMenuItems(data, fromSearch = false, subcategory_name = null,) {
+function displayMenuItems(data, fromSearch = false) {
     let areAllWithoutPhoto = data['menu_items'].length ? data['menu_items'].every(menu_item => menu_item['item_photo'] == null || menu_item['item_photo'] === "") : false;
     let subcategoryHeaderWrapper = $("#subcategory-header-wrapper");
     let contentWrapper = $("#content-wrapper");
-    if (fromSearch === false) {
+    if (fromSearch) {
+        $("#search").show();
+    } else {
         $("#search").hide();
         subcategoryHeaderWrapper.html(
-            `<h2 id="subcategory-header" class="d-flex flex-row gap-2 align-items-center" onclick="transitionTo(get_subcategories, ${data['parent_category_id']})"><span class="bi-arrow-left-short fs-1" style="color:var(--website-secondary-color)"></span> ${subcategory_name}</h2>`);
+            `<h2 id="subcategory-header" class="d-flex flex-row gap-2 align-items-center" onclick="transitionTo(get_subcategories, ${data['parent_category_id']})"><span class="bi-arrow-left-short fs-1" style="color:var(--website-secondary-color)"></span> ${data['parent_subcategory_name']}</h2>`);
         subcategoryHeaderWrapper.show();
-    } else {
-        $("#search").show();
     }
     content.empty();
 
@@ -63,7 +70,7 @@ function displayMenuItems(data, fromSearch = false, subcategory_name = null,) {
     data['menu_items'].forEach(menu_item => {
         content.append(
             `<div class="menu-items col" id="${menu_item['item_id']}">
-             ${menu_item['item_photo'] ? `<div class="menu-items-img-wrapper"><img class="menu-items-img" loading="lazy" src="${menu_item['item_photo']}" alt="Menu Item"/></div>`: (areAllWithoutPhoto ? '' : `<div class="menu-items-img-wrapper"><div class="menu-items-img"></div></div>`)}
+             ${menu_item['item_photo'] ? `<div class="menu-items-img-wrapper"><img class="menu-items-img" loading="lazy" onerror="this.src = 'static/img/util/food-tray.png'; this.classList.add('fallback')" src="${menu_item['item_photo']}" alt="Menu Item"/></div>`: (areAllWithoutPhoto ? '' : `<div class="menu-items-img-wrapper"><div class="menu-items-img"></div></div>`)}
              <div class="menu-items-header d-flex justify-content-between align-items-center mb-1">
              <h2 class="menu-items-title mb-0">${menu_item['item_name']}</h2>
              ${menu_item['weight'] ? `<div class="dots"></div> <span class="menu-items-weight">${menu_item['weight']} ${getLocaleString(menu_item['measure_unit'] === 'g' ? LOCALE_DICTS.MEASURE_UNIT_G : LOCALE_DICTS.MEASURE_UNIT_ML)}</span>` : ""}
@@ -100,25 +107,29 @@ function searchData() {
     $.get('/search', {query: query}).done((data) => displayMenuItems(data, true)).fail(() => responseFallback(getLocaleString(LOCALE_DICTS.NETWORK_ERROR)))
 }
 
-const btn = $('#scroll-top');
 $(document).ready(() => {
     let firstMenuBadge = $(".menu-badge:first-child");
     if (firstMenuBadge) {
-        firstMenuBadge.click();
+        firstMenuBadge.click()
+        lastState = {
+            'func': () => {firstMenuBadge.click()}
+        }
     } else {
         responseFallback(getLocaleString(LOCALE_DICTS.EMPTY_RESPONSE));
     }
+
+    setDefaults();
+});
+
+function setDefaults() {
     setCurrentLang();
-
-
-    btn.on('click', function (e) {
-        e.preventDefault();
-        $('html, body').animate({scrollTop: 0}, 100);
-    });
-
+    let location = $("#location");
+    location.attr("href", `https://maps.app.goo.gl/awA2hp3PjfrwyD2i7`);
+    let phoneNumber = $("#phone-number");
+    phoneNumber.attr("href", `tel:${phoneNumber.text()}`);
     let searchField = $('#search .search-field')[0];
     searchField.placeholder = getLocaleString(LOCALE_DICTS.SEARCH_PLACEHOLDER);
-});
+}
 
 
 function expandCropText(item_id) {
@@ -147,10 +158,6 @@ function responseFallback(text) {
                             </div>`
     );
 }
-
-$("#location").attr("href", `https://yandex.ru/maps/?mode=search&text=${$("#location").text()}`);
-$("#phone-number").attr("href", `tel:${$("#phone-number").text()}`);
-
 
 function openFullscreenImage(image) {
     var fullscreenImage = document.getElementById("fullscreenImage");
@@ -196,12 +203,19 @@ function setCurrentLang() {
     document.cookie = `lang=${currentLang}; path=/; max-age=3600`;
 }
 
-function handleLangChange() {
+async function handleLangChange() {
     let selector = document.querySelectorAll("#lang-select select")[0];
     let lang = selector.options[selector.selectedIndex].value;
     document.cookie = `lang=${lang}; path=/; max-age=3600`;
-
-    location.reload();
+    lastState.scrollY = window.scrollY;
+    let dp = new DOMParser();
+    await $.get("/").done(async (data) => {
+        document.querySelector("body").innerHTML = dp.parseFromString(data, 'text/html').querySelector("body").innerHTML;
+        setDefaults();
+        content = $("#content");
+        lastState.func();
+        document.querySelector(`#category-${lastState.category_id}`).classList.add('active')
+    })
 }
 
 function getCookie(name) {
@@ -219,11 +233,14 @@ $(window).scroll(() => {
 });
 
 function transitionTo(func, ...args) {
+    lastState.func =  () => transitionTo(func, ...args);
+
     let subcategoryHeaderWrapper = $("#subcategory-header-wrapper");
     let contentWrapper = $("#content-wrapper");
     let footer = $("footer");
     content.fadeOut(200, () => {
         footer.hide();
+        subcategoryHeaderWrapper.hide(100);
         content.empty();
         loadingSpinnerShow();
         contentWrapper.removeClass("without-photo");

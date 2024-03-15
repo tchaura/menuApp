@@ -276,3 +276,4 @@ menu_app.session.sql
 launch.json
 
 # End custom properties
+/.vscode/
