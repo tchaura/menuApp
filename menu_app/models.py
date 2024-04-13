@@ -95,3 +95,12 @@ class Information(db.Model):
     @property
     def header_thumb(self):
         return Markup('<img height=\'50px\' src=\'/' + (self.header_img if self.header_img else '') + '\'>')
+
+
+class Popup(db.Model):
+    popup_id = db.Column(db.Integer, primary_key = True)
+    popup_img = db.Column(db.String(255), nullable = True)
+    show_always = db.Column(db.Boolean, default = False)
+    show = db.Column(db.Boolean, default = False)
+    background_click = db.Column(db.Boolean, default = False)
+    close_timeout = db.Column(db.Integer, default = 2)

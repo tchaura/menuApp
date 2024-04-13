@@ -1,10 +1,64 @@
-let content = $("#content");
-let lastState = {}
-const btn = $('#scroll-top');
-btn.on('click', function (e) {
-    e.preventDefault();
-    $('html, body').animate({scrollTop: 0}, 100);
-});
+let content = $('#content');
+let lastState = {};
+const btn = document.querySelector("#scroll-top");
+const body = document.querySelector('body');
+
+
+function setScrollTop() {
+    btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    });
+
+    window.addEventListener('scroll',() => {
+        if (window.scrollY > 300) {
+            btn.classList.add('show');
+        } else {
+            btn.classList.remove('show');
+        }
+    });
+}
+setScrollTop();
+
+
+function setPopupFunctionality() {
+    const popup = document.querySelector('#popup');
+
+    if (!popup) return;
+
+    const popup_button = document.querySelector('#popup-button-close');
+    const close_timeout = Number(popup_button.getAttribute('delay'));
+    const is_background_clickable = popup.classList.contains('close-on-click');
+    const show_popup_button = document.querySelector("#show-popup");
+
+    setTimeout(showPopup, 1000);
+    setTimeout(enableCloseAbility, close_timeout * 1000);
+    popup_button.addEventListener('click', hidePopup);
+    show_popup_button.addEventListener('click', showPopup);
+
+    function enableCloseAbility() {
+        popup_button.style.visibility = 'visible';
+        popup_button.classList.add('show');
+        is_background_clickable && popup.addEventListener('click', hidePopup);
+    }
+    function showPopup() {
+        popup.classList.remove('hide');
+        show_popup_button.classList.remove('show');
+
+        popup.classList.add('show');
+        body.classList.add('no-scroll');
+    }
+    function hidePopup () {
+        body.classList.remove('no-scroll');
+        popup.classList.remove('show');
+
+        popup.classList.add('hide');
+        show_popup_button.classList.add('show');
+        document.cookie = `popup_is_shown=1; path=/; max-age=36000`;
+
+    }
+}
+setPopupFunctionality();
 
 function handleCategoryClick(category_id, has_subcategories) {
     lastState.category_id = category_id;
@@ -223,14 +277,6 @@ function getCookie(name) {
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(';').shift();
 }
-
-$(window).scroll(() => {
-    if (window.scrollY > 300) {
-        btn.fadeIn(200);
-    } else {
-        btn.fadeOut(200)
-    }
-});
 
 function transitionTo(func, ...args) {
     lastState.func =  () => transitionTo(func, ...args);

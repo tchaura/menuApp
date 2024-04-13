@@ -1,0 +1,10 @@
+{% extends 'admin/model/edit.html' %}
+
+{% block body %}
+    {% block navlinks %}
+    {% endblock %}
+    {% block edit_form %}
+        {{ lib.render_form(form, return_url, None, form_opts) }}
+    {% endblock %}
+{% endblock %}
+

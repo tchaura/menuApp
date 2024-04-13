@@ -1,0 +1,26 @@
+{% extends 'admin/one_row_model_form.html' %}
+{% block body %}
+    {%block edit_form %}
+        <div class="container" id="formContainer">
+            <ul class="nav nav-tabs mt-3" id="localeTabs">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" href="#main">Основные</a>
+                </li>
+            </ul>
+
+            <div class="tab-content mt-3" id="localeTabContent">
+                <div class="tab-pane fade show active" id="main">
+
+                </div>
+            </div>
+        </div>
+        {{ super() }}
+    {%endblock%}
+    <script src="/static/js/jquery.js"></script>
+{#    temporary solution#}
+    <script>
+        let imageThumbnail = $(".image-thumbnail img")[0]
+        imageThumbnail.src = imageThumbnail.src.replace("/static/static", "/static")
+    </script>
+    <script src="/static/js/admin/locale-edit.js"></script>
+{%endblock%}

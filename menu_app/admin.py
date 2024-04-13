@@ -1,20 +1,24 @@
 import os
 
 import flask_login as login
+from flask import redirect, url_for
 from flask_admin import Admin, expose
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.sqla.filters import FilterEqual
-from flask_admin.form.upload import FileUploadField, ImageUploadField
+from flask_admin.form.upload import ImageUploadField
+from markupsafe import Markup
 from werkzeug.utils import secure_filename
-from wtforms import SelectField, BooleanField, TextAreaField
+from wtforms import SelectField, BooleanField, TextAreaField, IntegerField
 
 from . import app
 from . import db
 from . import localization
 from .localization import extra_fields_generator
 from .login import MyAdminIndexView
-from .models import Category, Information, Subcategory, MenuItem
+from .models import Category, Information, Subcategory, MenuItem, Popup
 from .pillow import compress
+
+static_path = os.path.join(app.root_path, 'static')
 
 
 class SubcategoryNameFilter(FilterEqual):
@@ -33,14 +37,50 @@ class CategoryNameFilter(FilterEqual):
         return 'равна'
 
 
+class SingleRowModelView(ModelView):
+
+    create_template = 'admin/one_row_model_form.html'
+    edit_template = create_template
+
+    id_row_name = 'id'
+
+    can_delete = False
+
+    def is_accessible(self):
+        return login.current_user.is_authenticated
+
+    @expose('/', methods=['GET', 'POST'])
+    def index_view(self):
+        self.can_edit = False
+        self.can_create = True
+
+        count = self.get_count()
+
+        if count == 0:
+            return redirect(url_for('.create_view'))
+        elif count == 1:
+            self.can_edit = True
+            self.can_create = False
+            return redirect(url_for('.edit_view', id=self.get_first_id()))
+        else:
+            return super().index_view()
+
+    def get_count(self):
+        return self.session.query(self.model).count()
+
+    def get_first_id(self):
+        first_row = self.session.query(self.model).first()
+        if first_row:
+            return getattr(first_row, self.id_row_name)
+        return None
+
+
 class MenuItemModelView(ModelView):
     def is_accessible(self):
         return login.current_user.is_authenticated
 
     create_template = 'admin/menu_item_form_create.html'
     edit_template = 'admin/menu_item_form_edit.html'
-
-    # Остальные настройки представления
 
     column_labels = dict(item_name='Название блюда', item_photo='Фото', subcategory_name='Подкатегория',
                          photo_thumb='Фото',
@@ -97,7 +137,7 @@ class MenuItemModelView(ModelView):
     }
     form_args = {
         'item_photo': {
-            'label': 'Фото блюда (без русских символов в названии)',
+            'label': 'Фото блюда',
             'base_path': 'menu_app/static/img/menu_items',
             'namegen': lambda obj, file_data: "temp" + os.path.splitext(file_data.filename)[1]
         },
@@ -184,6 +224,9 @@ class MenuItemModelView(ModelView):
 
 
 class CategoryModelView(ModelView):
+
+    edit_modal = True
+
     def is_accessible(self):
         return login.current_user.is_authenticated
 
@@ -211,12 +254,13 @@ class CategoryModelView(ModelView):
 
 
 class SubcategoryModelView(ModelView):
+    edit_modal = True
 
     def is_accessible(self):
         return login.current_user.is_authenticated
 
-    create_template = 'admin/subcategory_form.html'
-    edit_template = 'admin/subcategory_form.html'
+    create_template = 'admin/multilang_model_form.html'
+    edit_template = create_template
 
     column_labels = dict(subcategory_name='Имя', category_name='Категория', photo_thumb='Фото')
     column_list = ('subcategory_name', 'category_name', 'photo_thumb')
@@ -254,7 +298,7 @@ class SubcategoryModelView(ModelView):
     }
     form_args = {
         'subcategory_photo': {
-            'label': 'Фото подкатегории (без русских символов в названии)',
+            'label': 'Фото подкатегории',
             'base_path': 'menu_app/static/img/subcategories',
             'namegen': lambda obj, file_data: "temp" + os.path.splitext(file_data.filename)[1],
 
@@ -295,10 +339,12 @@ class SubcategoryModelView(ModelView):
             if form.subcategory_photo.data == model.subcategory_photo:
                 return
 
-            temp_path = os.path.join('menu_app/static/img/subcategories', secure_filename(form.subcategory_photo.data.filename))
+            temp_path = os.path.join('menu_app/static/img/subcategories',
+                                     secure_filename(form.subcategory_photo.data.filename))
             file_extension = os.path.splitext(temp_path)[1]
             compress(temp_path)
-            os.rename(temp_path, os.path.join('menu_app/static/img/subcategories', str(model.subcategory_id) + file_extension))
+            os.rename(temp_path,
+                      os.path.join('menu_app/static/img/subcategories', str(model.subcategory_id) + file_extension))
 
             model.subcategory_photo = 'static/img/subcategories/' + str(model.subcategory_id) + file_extension
 
@@ -310,14 +356,19 @@ class SubcategoryModelView(ModelView):
                     os.remove(os.path.join(app.root_path, old_filename))
 
 
-class InformationView(ModelView):
+class InformationView(SingleRowModelView):
+
+    id_row_name = 'info_id'
+
     def is_accessible(self):
         return login.current_user.is_authenticated
 
+    can_delete = False
+
     form_extra_fields = {}
 
-    create_template = 'admin/information_form.html'
-    edit_template = 'admin/information_form.html'
+    create_template = 'admin/one_row_multilang_model_form.html'
+    edit_template = create_template
 
     localized_fields = [('title', 'Заголовок'), ('adress', 'Адрес'), ]
     form_extra_fields.update(extra_fields_generator(localized_fields))
@@ -332,8 +383,8 @@ class InformationView(ModelView):
         localization.on_model_delete(self, 'information', localized_fields, model.info_id)
 
     column_labels = dict(title='Заголовок', adress='Адрес', phone='Телефон', wifi='WiFi', wifi_password='Пароль WiFi',
-                         logo_thumb='Логотип (без русских символов в названии)',
-                         header_thumb='Шапка (без русских символов в названии)')
+                         logo_thumb='Логотип',
+                         header_thumb='Шапка')
     column_list = ('title', 'adress', 'phone', 'wifi', 'wifi_password', 'logo_thumb', 'header_thumb')
 
     form_overrides = {
@@ -384,9 +435,48 @@ class InformationView(ModelView):
                         os.remove(os.path.join(app.root_path, old_filename))
 
 
+def popup_namegen(obj, file_data):
+    parts = os.path.splitext(file_data.filename)
+    return secure_filename('popup' + parts[1])
+
+
+class PopupModelView(SingleRowModelView):
+
+    id_row_name = 'popup_id'
+
+    form_columns = ('show', 'show_always', 'background_click', 'close_timeout', 'popup_img')
+    form_overrides = {
+        'popup_img': ImageUploadField,
+        'show_always': BooleanField,
+        'close_timeout': IntegerField
+    }
+
+    form_args = {
+        'show_always': {
+            'description': 'If checked, the popup will be shown everytime user loads website, '
+                           'else it will be shown only once until user clicks close button'
+        },
+        'popup_img': {
+            'label': "Popup image",
+            'namegen': popup_namegen,
+            'base_path': static_path,
+            'relative_path': "img/util/",
+            'description': Markup('Recommended file size: <b>630x630</b>')
+        },
+        'close_timeout': {
+            'render_kw': {'style': 'width: 4rem'},
+            'description': 'Sets the amount of time (in seconds) after which the popup can be closed.'
+        },
+        'background_click': {
+            'description': 'If checked, the popup can be closed by clicking the background'
+        }
+    }
+
+
 admin = Admin(app, name='Панель администратора', template_mode='bootstrap4', index_view=MyAdminIndexView(),
-              base_template='my_master.html', translations_path='./translations')
+              base_template='admin/my_master.html', translations_path='./translations')
 admin.add_view(InformationView(Information, db.session, name="Информация"))
 admin.add_view(CategoryModelView(Category, db.session, name='Категории'))
 admin.add_view(SubcategoryModelView(Subcategory, db.session, name='Подкатегории'))
 admin.add_view(MenuItemModelView(MenuItem, db.session, name="Блюда"))
+admin.add_view(PopupModelView(Popup, db.session, name="Popup"))

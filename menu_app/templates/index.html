@@ -51,25 +51,37 @@
         </div>
     </div>
 </div>
-<div class="container pt-3" id="subcategory-header-wrapper"></div>
 
-{% block content %}
+<div id="content-wrapper">
+    <div class="container" id="subcategory-header-wrapper"></div>
+    {% block content %}
 
-{% endblock %}
-
-<div id="scroll-top"><span class="bi-chevron-up"></span></div>
+    {% endblock %}
+</div>
+<div class="corner-button" id="scroll-top"><span class="bi-chevron-up"></span></div>
 <footer>
     <div class="mt-5 pb-2 text-center">
         © {{year}} {{info['title']}}
-
-
     </div>
 </footer>
 <div id="fullscreenImage">
     <img id="fullscreenImageSrc">
     <span id="closeFullscreen" onclick="closeFullscreenImage()" class="bi-x"></span>
 </div>
+
+{% if popup_config and popup_config.show %}
+    <section id="popup" class="{% if popup_config.background_click %}close-on-click{% endif %}">
+        <div id="popup-container">
+            <img alt="Popup" src="static/img/util/popup.png" id="popup-img"/>
+            <button type="button" name="Close" class="popup-button bi bi-x" style="visibility: hidden" id="popup-button-close" delay="{{ popup_config.close_timeout }}"></button>
+        </div>
+    </section>
+<div class="corner-button" id="show-popup"><span class="">Ad</span></div>
+{% endif %}
+
 </body>
+
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 <script src="static/js/script.js"></script>
 

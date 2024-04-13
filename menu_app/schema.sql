@@ -1,31 +1,79 @@
--- Для таблицы MenuItems
-ALTER TABLE MenuItems RENAME TO MenuItemsOld;  -- Переименование существующей таблицы
-CREATE TABLE MenuItems (
-    item_id INTEGER PRIMARY KEY,
-    item_name TEXT NOT NULL,
-    price REAL NOT NULL,
-    description TEXT,
-    ingredients TEXT,
-    weight REAL,
-    item_photo TEXT,  -- Добавление нового столбца с новым именем
-    subcategory_id INTEGER,
-    FOREIGN KEY (subcategory_id) REFERENCES Subcategories (subcategory_id)
+create table Categories
+(
+    category_id       INTEGER not null
+        primary key,
+    category_name     VARCHAR not null,
+    has_subcategories INTEGER
 );
-INSERT INTO MenuItems (item_id, item_name, price, description, ingredients, weight, item_photo, subcategory_id)
-SELECT item_id, item_name, price, description, ingredients, weight, photo, subcategory_id
-FROM MenuItemsOld;
-DROP TABLE MenuItemsOld;  -- Удаление старой таблицы
 
--- Для таблицы Subcategories
-ALTER TABLE Subcategories RENAME TO SubcategoriesOld;  -- Переименование существующей таблицы
-CREATE TABLE Subcategories (
-    subcategory_id INTEGER PRIMARY KEY,
-    subcategory_name TEXT NOT NULL,
-    category_id INTEGER,
-    subcategory_photo TEXT,  -- Добавление нового столбца с новым именем
-    FOREIGN KEY (category_id) REFERENCES Categories (category_id)
+create table Subcategories
+(
+    subcategory_id    INTEGER not null
+        primary key,
+    subcategory_name  VARCHAR not null,
+    subcategory_photo TEXT    not null,
+    category_id       INTEGER
+        references Categories
 );
-INSERT INTO Subcategories (subcategory_id, subcategory_name, category_id, subcategory_photo)
-SELECT subcategory_id, subcategory_name, category_id, photo
-FROM SubcategoriesOld;
-DROP TABLE SubcategoriesOld;  -- Удаление старой таблицы
+
+create table MenuItems
+(
+    item_id        INTEGER not null
+        primary key,
+    item_name      VARCHAR not null,
+    item_photo     TEXT,
+    price          FLOAT   not null,
+    description    TEXT,
+    ingredients    TEXT,
+    weight         text,
+    subcategory_id INTEGER
+        references Subcategories,
+    category_id    INTEGER
+        references Categories,
+    measure_unit   varchar(10) default 'g'
+);
+
+create table Translations
+(
+    translation_id    INTEGER      not null
+        primary key,
+    language_code     VARCHAR(5)   not null,
+    reference_table   VARCHAR(255) not null,
+    reference_id      INTEGER      not null,
+    reference_field   VARCHAR(255) not null,
+    translation_value VARCHAR(255)
+);
+
+create table information
+(
+    info_id       INTEGER      not null
+        primary key,
+    logo          VARCHAR(255) not null,
+    header_img    VARCHAR(255) not null,
+    title         VARCHAR(100) not null,
+    adress        VARCHAR(100) not null,
+    phone         VARCHAR(100) not null,
+    wifi          VARCHAR(100) not null,
+    wifi_password VARCHAR(100)
+);
+
+create table popup
+(
+    popup_id         INTEGER not null
+        primary key,
+    popup_img        VARCHAR(255),
+    show_always      BOOLEAN,
+    show             BOOLEAN,
+    background_click BOOLEAN,
+    close_timeout    INTEGER
+);
+
+create table user
+(
+    id       INTEGER not null
+        primary key,
+    login    VARCHAR(80)
+        unique,
+    password VARCHAR(64)
+);
+

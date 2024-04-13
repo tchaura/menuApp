@@ -14,7 +14,7 @@
 body {
     font-family: Raleway, sans-serif;
     margin: 0 auto;
-    max-width: 30rem;
+    /*max-width: 30rem;*/
     display: flex;
     flex-direction: column;
     min-height: 100vh;
@@ -81,8 +81,8 @@ input:focus,
 select:focus, .form-control:focus,
 textarea:focus,
 button:focus {
-  outline: none !important;
-  box-shadow: none !important;
+    outline: none !important;
+    box-shadow: none !important;
 }
 
 #lang-select {
@@ -244,6 +244,12 @@ button:focus {
     z-index: 5;
 }
 
+.menu-items-title::after {
+    content: ' ';
+    position: relative;
+    display: block;
+}
+
 .subcategory-photo {
     position: relative;
     width: 100%;
@@ -289,8 +295,7 @@ img.fallback {
 
 #content-wrapper {
     background-color: var(--bg-color);
-    flex: 1;
-    margin-top: 1rem;
+    padding-top: 1rem;
 }
 
 .menu-items {
@@ -398,6 +403,10 @@ footer {
     color: rgb(107, 66, 14);
 }
 
+#subcategory-header-wrapper {
+    padding-bottom: 1rem;
+}
+
 #subcategory-header:hover {
     background-color: rgba(85, 85, 85, 0.1);
     transition: 0.4s ease-in;
@@ -452,60 +461,86 @@ footer {
 }
 
 @keyframes ldio-0oeqvw1sd7zb {
-  0% { transform: translate(-50%,-50%) rotate(0deg); }
-  100% { transform: translate(-50%,-50%) rotate(360deg); }
+    0% { transform: translate(-50%,-50%) rotate(0deg); }
+    100% { transform: translate(-50%,-50%) rotate(360deg); }
 }
 .ldio-0oeqvw1sd7zb div {
     position: relative;
-  width: 56px;
-  height: 56px;
-  border: 3px solid var(--website-primary-color);
-  border-top-color: transparent;
-  border-radius: 50%;
+    width: 56px;
+    height: 56px;
+    border: 3px solid var(--website-primary-color);
+    border-top-color: transparent;
+    border-radius: 50%;
 }
 .ldio-0oeqvw1sd7zb div {
-  animation: ldio-0oeqvw1sd7zb 0.5813953488372093s linear infinite;
-  top: 50%;
-  left: 50%
+    animation: ldio-0oeqvw1sd7zb 0.5813953488372093s linear infinite;
+    top: 50%;
+    left: 50%
 }
 .loadingio-spinner-rolling-sk0x4g1jti {
-  width: 200px;
-  height: 200px;
-  display: inline-block;
-  overflow: hidden;
-  margin: auto;
+    width: 200px;
+    height: 200px;
+    display: inline-block;
+    overflow: hidden;
+    margin: auto;
 }
 .ldio-0oeqvw1sd7zb {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  transform: translateZ(0) scale(1);
-  backface-visibility: hidden;
-  transform-origin: 0 0;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform: translateZ(0) scale(1);
+    backface-visibility: hidden;
+    transform-origin: 0 0;
 }
 .ldio-0oeqvw1sd7zb div { box-sizing: content-box; }
 
-#scroll-top {
-  background-color: var(--bg-color);
+.corner-button {
+    background-color: var(--bg-color);
     border: 2px solid var(--website-secondary-color);
-  width: 50px;
-  height: 50px;
-  text-align: center;
-  border-radius: 100%;
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  padding: 3px;
-  /* transition: background-color .3s, 
-    opacity .5s, visibility .5s; */
-  z-index: 1000;
-  display: none;
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    border-radius: 100%;
+    position: fixed;
+    padding: 3px;
+    z-index: 1000;
+    transition: 0.3s ease-in;
+    visibility: hidden;
+    opacity: 0;
+}
+
+.corner-button.show {
+    visibility: visible;
+    transition: 0.3s ease-in;
+    opacity: 1;
+}
+
+.corner-button:hover {
+    cursor: pointer;
+}
+
+.corner-button span {
+    color: var(--website-secondary-color);
+    font-size: 1.25rem;
+    position: relative;
+}
+
+#show-popup {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    bottom: 30px;
+    left: 30px;
+}
+
+
+#scroll-top {
+    bottom: 30px;
+    right: 30px;
 }
 
 #scroll-top span {
-    color: var(--website-secondary-color);
     font-size: 28px;
-    position: relative;
     top: -1px;
 }
 
@@ -528,7 +563,7 @@ footer {
         height: 24rem;
         position: relative;
         mask-image: linear-gradient(to right, transparent 0%, black 30%, black 70%, transparent 100%),
-                    linear-gradient(to top, transparent 0%, black 16%);
+        linear-gradient(to top, transparent 0%, black 16%);
         mask-composite: intersect;
     }
 
@@ -576,7 +611,7 @@ footer {
 }
 
 @media screen and (max-width: 768px) {
-     .subcategory:nth-child(even) .subcategory-wrapper .subcategory-photo {
+    .subcategory:nth-child(even) .subcategory-wrapper .subcategory-photo {
         left: calc(var(--border-spacing));
     }
 
@@ -587,11 +622,11 @@ footer {
 
 @media screen and (min-width: 1024px) {
 
-    
+
     .menu-badge:last-child {
         margin-right: 0;
     }
-    
+
 }
 
 .dots {
@@ -603,6 +638,7 @@ footer {
 
 .without-photo {
     max-width: 50rem;
+    margin: 0 auto;
 }
 
 .without-photo .row {
@@ -610,6 +646,93 @@ footer {
 }
 
 .without-photo .menu-items-title {
-    font-weight: normal;
+    font-weight: bold;
+}
+
+#popup {
+    z-index: 100;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: rgb(0 0 0 / 70%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.2s ease-in-out;
+}
+
+#popup.show {
+    visibility: visible;
+    opacity: 1;
+    transition: 0.2s ease-in-out;
+}
+
+#popup.show #popup-container {
+    top: 0;
+    opacity: 1;
+    transition: 0.2s ease-in-out;
+}
+
+#popup.hide {
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.2s ease-in-out;
+}
+#popup.hide #popup-container {
+    top: 20px;
+    opacity: 0;
+    transition: 0.2s ease-in-out;
+}
+
+#popup-container {
+    aspect-ratio: 1/1;
+    position: relative;
+    max-height: 70%;
+    width: auto;
+    background: white;
+    border-radius: 25px;
+    overflow: hidden;
+    margin: 1rem;
+    top: -20px;
+    opacity: 0;
+    transition: 0.2s ease-in-out;
+}
+#popup-img {
+    margin: auto;
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+
+.popup-button {
+    width: 3rem;
+    height: 3rem;
+    background: rgba(148, 148, 148, 0.5);
+    border-radius: 100%;
+    border: none;
+    color: black;
+    margin: 0.75rem;
+    z-index: 1;
+    position: absolute;
+    right: 0;
+    top: 0;
+    font-size: 2rem;
+    overflow: hidden;
+    opacity: 0;
+}
+
+.popup-button.show {
+    opacity: 1;
+    transition: 0.5s ease-out;
+}
+
+.popup-button::before {
+    display: block;
+}
+
+body.no-scroll {
+    overflow: hidden;
 }
 
