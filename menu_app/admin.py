@@ -21,6 +21,14 @@ from .pillow import compress
 static_path = os.path.join(app.root_path, 'static')
 
 
+def namegen(desired_name):
+    def wrapped_func(obj, file_data):
+        parts = os.path.splitext(file_data.filename)
+        return secure_filename(desired_name + parts[1])
+
+    return wrapped_func
+
+
 class SubcategoryNameFilter(FilterEqual):
     def apply(self, query, value):
         return query.join(Subcategory).filter(Subcategory.subcategory_name == value)
@@ -393,51 +401,23 @@ class InformationView(SingleRowModelView):
     }
     form_args = {
         'logo': {
-            'label': 'Логотип сайта',
-            'base_path': 'menu_app/static/img/info',
-            'namegen': None
+            'label': "Логотип",
+            'namegen': namegen("logo"),
+            'base_path': static_path,
+            'relative_path': "img/info/"
         },
         'header_img': {
             'label': 'Шапка',
-            'base_path': 'menu_app/static/img/info',
-            'namegen': None
+            'namegen': namegen('header'),
+            'base_path': static_path,
+            'relative_path': "img/info/"
         },
     }
 
     def on_model_change(self, form, model, is_created):
         for field in ['logo', 'header_img']:
             if form[field].data:
-                # if photo is not changed, do nothing
-                if field == 'logo':
-                    if form[field].data == model.logo:
-                        continue
-                else:
-                    if form[field].data == model.header_img:
-                        continue
-
-                filename = secure_filename(form[field].data.filename)
-                compress(os.path.join('menu_app/static/img/info', form[field].data.filename))
-
-                if field == 'logo':
-                    model.logo = 'static/img/info/' + filename
-                else:
-                    model.header_img = 'static/img/info/' + filename
-
-                if not is_created and form[field].object_data:
-                    old_filename = form[field].object_data
-                    if field == 'logo':
-                        if old_filename == model.logo:
-                            return
-                    else:
-                        if old_filename == model.header_img:
-                            return
-                    if os.path.exists(os.path.join(app.root_path, old_filename)):
-                        os.remove(os.path.join(app.root_path, old_filename))
-
-
-def popup_namegen(obj, file_data):
-    parts = os.path.splitext(file_data.filename)
-    return secure_filename('popup' + parts[1])
+                compress(os.path.join(static_path, form[field].data.filename))
 
 
 class PopupModelView(SingleRowModelView):
@@ -458,7 +438,7 @@ class PopupModelView(SingleRowModelView):
         },
         'popup_img': {
             'label': "Popup image",
-            'namegen': popup_namegen,
+            'namegen': namegen('popup'),
             'base_path': static_path,
             'relative_path': "img/util/",
             'description': Markup('Recommended file size: <b>630x630</b>')

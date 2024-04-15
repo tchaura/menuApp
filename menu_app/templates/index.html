@@ -15,9 +15,9 @@
 <div id="header-wrapper">
     <div class="container header p-0">
         <div class="header-background">
-            <img src="{{ info['header_img'] }}" class="header-img" width="100%" height="100%" alt="header-img">
+            <img src="static/{{ info['header_img'] }}" class="header-img" width="100%" height="100%" alt="header-img">
         </div>
-        <img src="{{info['logo']}}" class="header-logo d-block position-relative">
+        <img src="static/{{info['logo']}}" class="header-logo d-block position-relative">
         <div id="lang-select">
             <select onchange="handleLangChange()">
                 {% for key, value in config['LANGUAGES'].items() %}
@@ -73,10 +73,12 @@
     <section id="popup" class="{% if popup_config.background_click %}close-on-click{% endif %}">
         <div id="popup-container">
             <img alt="Popup" src="static/img/util/popup.png" id="popup-img"/>
-            <button type="button" name="Close" class="popup-button bi bi-x" style="visibility: hidden" id="popup-button-close" delay="{{ popup_config.close_timeout }}"></button>
+            <button type="button" name="Close" class="popup-button" style="visibility: hidden" id="popup-button-close" delay="{{ popup_config.close_timeout }}">
+                <span class="bi bi-x"></span>
+            </button>
         </div>
     </section>
-<div class="corner-button" id="show-popup"><span class="">Ad</span></div>
+<div class="corner-button" id="show-popup"><span>Ad</span></div>
 {% endif %}
 
 </body>

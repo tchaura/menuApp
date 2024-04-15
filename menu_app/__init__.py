@@ -95,5 +95,6 @@ def rename_file(item, renamed_files):
 
 
 with app.app_context():
-    # rename_static_files()
     db.create_all()
+
+

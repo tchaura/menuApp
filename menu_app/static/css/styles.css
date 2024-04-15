@@ -503,7 +503,7 @@ footer {
     border-radius: 100%;
     position: fixed;
     padding: 3px;
-    z-index: 1000;
+    z-index: 100;
     transition: 0.3s ease-in;
     visibility: hidden;
     opacity: 0;
@@ -661,6 +661,9 @@ footer {
     opacity: 0;
     visibility: hidden;
     transition: 0.2s ease-in-out;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    -webkit-user-drag: none;
 }
 
 #popup.show {
@@ -707,29 +710,33 @@ footer {
 }
 
 .popup-button {
-    width: 3rem;
-    height: 3rem;
+    aspect-ratio: 1;
+    width: 50px;
     background: rgba(148, 148, 148, 0.5);
     border-radius: 100%;
     border: none;
     color: black;
-    margin: 0.75rem;
+    margin: 1rem;
     z-index: 1;
     position: absolute;
     right: 0;
     top: 0;
-    font-size: 2rem;
     overflow: hidden;
     opacity: 0;
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3px;
+}
+
+.popup-button span {
+    display: flex;
 }
 
 .popup-button.show {
     opacity: 1;
     transition: 0.5s ease-out;
-}
-
-.popup-button::before {
-    display: block;
 }
 
 body.no-scroll {
