@@ -11,10 +11,11 @@ app = Flask(__name__)
 # first lang is the primary
 app.config['LANGUAGES'] = {
     'en': 'English',
-    'ge': 'ქართული',
-    'tr': 'Türkçe',
-    'he': 'עִברִית',
-    'ru': 'Русский',
+    'ge': 'Georgian',
+    'tr': 'Turkish',
+    'ar': 'Arabian',
+    'fa': 'Farsi',
+    'ru': 'Russian'
 }
 
 app.config['DEFAULT_LANG'] = list(app.config['LANGUAGES'].keys())[0]

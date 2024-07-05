@@ -1,47 +1,43 @@
 {% extends 'admin/master.html' %}
 {% block body %}
-{{ super() }}
-<div class="row-fluid">
+    {{ super() }}
+    <div class="row-fluid">
 
-    <div>
-        {% if current_user.is_authenticated %}
-        <h1>{{ config['SITE_NAME'] }}</h1>
-        <p class="lead">
-            Добро пожаловать!
-        </p>
-        <p>
-            Для редактирования данных используйте вкладки в меню навигации
-        </p>
-        {% else %}
-        {% if 'admin/register/' in url_for(request.endpoint)%}
-            <h4>При первом входе вам необходимо создать аккаунт</h4>
-            {%else%}
-            <h1>Вход</h1>
-            {%endif%}
-        <form method="POST" action="">
-            {{ form.hidden_tag() if form.hidden_tag }}
-            {% for f in form if f.type != 'CSRFTokenField' %}
-            <div class="form-group">
-            {{ f.label }}<br>
-            {{ f }}
-            {% if f.errors %}
-            <ul>
-                {% for e in f.errors %}
-                <li>{{ e }}</li>
-                {% endfor %}
-            </ul>
+        <div>
+            {% if current_user.is_authenticated %}
+                <h1>{{ config['SITE_NAME'] }}</h1>
+                <p class="lead">Добро пожаловать!</p>
+                <p>Для редактирования данных используйте вкладки в меню навигации</p>
+            {% else %}
+                {% if 'admin/register/' in url_for(request.endpoint) %}
+                    <h4>При первом входе вам необходимо создать аккаунт</h4>
+                {% else %}
+                    <h1>Вход</h1>
+                {% endif %}
+                <form method="POST" action="">
+                    {{ form.hidden_tag() if form.hidden_tag }}
+                    {% for f in form if f.type != 'CSRFTokenField' %}
+                        <div class="form-group">
+                            {{ f.label }}<br>
+                            {{ f }}
+                            {% if f.errors %}
+                                <ul>
+                                    {% for e in f.errors %}
+                                        <li>{{ e }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    {% if 'admin/register/' in url_for(request.endpoint)%}
+                        <button class="btn btn-primary" type="submit">Регистрация</button>
+                    {%else%}
+                        <button class="btn btn-primary" type="submit">Вход</button>
+                    {%endif%}
+                    <a class="btn btn-primary" href="/"><i class="icon-arrow-left icon-white"></i> Назад</a>
+                </form>
+                {{ link | safe }}
             {% endif %}
-            </div>
-            {% endfor %}
-            {% if 'admin/register/' in url_for(request.endpoint)%}
-            <button class="btn btn-primary" type="submit">Регистрация</button>
-            {%else%}
-            <button class="btn btn-primary" type="submit">Вход</button>
-            {%endif%}
-            <a class="btn btn-primary" href="/"><i class="icon-arrow-left icon-white"></i> Назад</a>
-        </form>
-        {{ link | safe }}
-        {% endif %}
+        </div>
     </div>
-</div>
 {% endblock body %}
