@@ -1,7 +1,7 @@
 let content = $('#content');
 let lastState = {};
 const btn = document.querySelector("#scroll-top");
-const body = document.querySelector('body');
+const body = document.body;
 
 
 function setScrollTop() {
@@ -313,34 +313,46 @@ function getLocaleString(localeDict) {
     return localeDict[currentLocale && currentLocale in localeDict ? currentLocale : "default"];
 }
 
+function loadingSpinnerShow() {
+    content.prepend(
+        `<div class="loadingio-spinner-rolling-sk0x4g1jti"><div class="ldio-0oeqvw1sd7zb">
+                    <div></div>
+                    </div></div>`
+    );
+}
+
 const LOCALE_DICTS = {
     EMPTY_RESPONSE: {
         "default": "Looks like there's nothing here",
         "ru": "Похоже, тут пусто",
         "tr": "Boş gibi görünüyor",
         "ge": "ეს ნიშნავს, რომ აქ არაფერია",
-        "he": "נראה שאין כאן כלום",
+        "ar": "يبدو أنه لا يوجد شيء هنا",
+        "fa": "به نظر می رسد اینجا چیزی نیست",
     },
     NETWORK_ERROR: {
         "default": "Connection error",
         "ru": "Проблемы с соединением",
         "tr": "Bağlantı sorunları",
         "ge": "კავშირის შეფერხება",
-        "he": "שגיאת חיבור",
+        "ar": "خطأ في الاتصال",
+        "fa": "خطای اتصال",
     },
     RETURN_TO_MAIN: {
         "default": "Back to main page",
         "ru": "Вернуться на главную",
         "tr": "Ana Sayfaya Geri Dön",
         "ge": "უკან დაბრუნება მთავარ გვერდზე",
-        "he": "חזור לעמוד הראשי",
+        "ar": "العودة إلى الصفحة الرئيسية",
+        "fa": "بازگشت به صفحه اصلی",
     },
     SEARCH_PLACEHOLDER: {
         "default": "Search...",
         "ru": "Поиск...",
         "tr": "Arama teriminizi girin...",
         "ge": "ძიება...",
-        "he": "חיפוש...",
+        "ar": "بحث...",
+        "fa": "جستجو...",
     },
     MEASURE_UNIT_G: {
         "default": "g",
@@ -358,15 +370,7 @@ const LOCALE_DICTS = {
         "ru": "Состав",
         "ge": "Συστατικά",
         "tr": "İçindekiler",
-        "he": "רכיבים"
+        "ar": "المكونات",
+        "fa": "المكونات",
     }
 };
-
-
-function loadingSpinnerShow() {
-    content.prepend(
-        `<div class="loadingio-spinner-rolling-sk0x4g1jti"><div class="ldio-0oeqvw1sd7zb">
-                    <div></div>
-                    </div></div>`
-    );
-}
