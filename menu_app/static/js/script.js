@@ -252,6 +252,13 @@ function setCurrentLang() {
     let selector = document.querySelector("#lang-select select");
     let langCookie = getCookie('lang');
     let currentLang = langCookie == null ? "en" : langCookie;
+
+    if (currentLang === 'fa' || currentLang === 'ar') {
+        document.querySelector("html").setAttribute("dir", "rtl");
+    }
+    else {
+        document.querySelector("html").setAttribute("dir", "ltr")
+    }
     selector.value = currentLang != null ? currentLang : 'en';
 
     document.cookie = `lang=${currentLang}; path=/; max-age=3600`;
