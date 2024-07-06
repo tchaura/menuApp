@@ -253,7 +253,7 @@ function setCurrentLang() {
     let langCookie = getCookie('lang');
     let currentLang = langCookie == null ? "en" : langCookie;
 
-    if (currentLang === 'fa' || currentLang === 'ar') {
+    if (currentLang === 'fa' || currentLang === 'ar' || currentLang === 'he') {
         document.querySelector("html").setAttribute("dir", "rtl");
     }
     else {
