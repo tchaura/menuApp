@@ -15,9 +15,9 @@
 <div id="header-wrapper">
     <div class="container header p-0">
         <div class="header-background">
-            <img src="static/{{ info['header_img'] }}" class="header-img" width="100%" height="100%" alt="header-img">
+            <img src="static/{{ info['header_img'] }}" class="header-img" width="100%" height="100%" alt="Header">
         </div>
-        <img src="static/{{info['logo']}}" class="header-logo d-block position-relative">
+        <img src="static/{{info['logo']}}" class="header-logo d-block position-relative" alt="Logo">
         <div id="lang-select">
             <select onchange="handleLangChange()">
                 {% for key, value in config['LANGUAGES'].items() %}
@@ -32,13 +32,13 @@
     <div class="container d-flex flex-wrap position-relative gap-2 justify-content-center restaurant-info" style="padding: 0 2rem">
         <span class="info"><span class="bi-geo-alt me-1"></span><a id="location" class="info">{{info['adress']}}</a></span>
         <span class="info"><span class="bi-telephone me-1"></span> <a id="phone-number" class="info">{{info['phone']}}</a></span>
-        <span class="text-nowrap d-flex info"><span class="bi-wifi info me-1"></span><span class="me-3" id="wifi">{{info['wifi']}}</span>{% if info['wifi_password'] %}<span class="bi-key info me-1"></span><span id="wifi-password">{{info['wifi_password']}}</span>{% endif %}</span>
+        <span class="text-nowrap d-flex info"><span class="bi-wifi info me-1"></span><span class="{% if info['wifi_password'] %} me-3 {% endif %}" id="wifi">{{info['wifi']}}</span>{% if info['wifi_password'] %}<span class="bi-key info me-1"></span><span id="wifi-password">{{info['wifi_password']}}</span>{% endif %}</span>
     </div>
 </div>
 <div id="menu" class="right-fade justify-content-center">
     <div class="container py-3 d-flex gap-3 pt-3">
         {% for category in categories %}
-            <a id="category-{{ category['category_id'] }}" class="menu-badge" onclick="handleCategoryClick({{ category['category_id'] }}, {{ category['has_subcategories'] }})">{{category['category_name']}}</a>
+            <button id="category-{{ category['category_id'] }}" class="menu-badge" onclick="handleCategoryClick({{ category['category_id'] }}, {{ category['has_subcategories'] }})">{{category['category_name']}}</button>
         {% endfor %}
     </div>
 </div>
@@ -47,7 +47,7 @@
     <div class="container pb-3" id="search">
         <div class="search d-flex justify-content-between">
             <input id="search-input" type="search" class="search-field form-control" placeholder="Введите запрос для поиска..." style="appearance: none;">
-            <a type="submit" onclick="searchData()"><span class="bi-search btn btn-primary rounded-5"></span></a>
+            <button type="submit" onclick="searchData()"><span class="bi-search btn btn-primary rounded-5"></span></button>
         </div>
     </div>
 </div>

@@ -223,7 +223,7 @@ button:focus {
 }
 
 .subcategory-wrapper:dir(rtl) {
-        float: left;
+    float: left;
 }
 
 .subcategory:nth-child(even) .subcategory-wrapper {
