@@ -144,6 +144,9 @@ button:focus {
 }
 
 .menu-badge {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
     display: flex;
     background-color: unset;
     /*border-radius: 20px; */
@@ -160,7 +163,8 @@ button:focus {
 .menu-badge:hover {
     border-color: var(--bg-color);
     color: white;
-    background: var(--bg-color) linear-gradient(90deg, rgb(192, 168, 113) 0%, rgb(94, 55, 20) 100%);
+    background: var(--bg-color);
+    background: linear-gradient(90deg, rgb(192, 168, 113) 0%, rgb(94, 55, 20) 100%);
     transition: ease-in 0.2s;
     text-decoration: none;
     cursor: pointer;
@@ -169,11 +173,20 @@ button:focus {
 .menu-badge.active {
     border-color: var(--bg-color);
     color: white;
-    background: var(--bg-color) linear-gradient(90deg, rgb(192, 168, 113) 0%, rgb(94, 55, 20) 100%);
+    background: var(--bg-color);
+    background: linear-gradient(90deg, rgb(192, 168, 113) 0%, rgb(94, 55, 20) 100%);
 }
 
 #search {
     background-color: var(--website-primary-color);
+}
+
+#search button {
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    border: none;
+    background: none;
 }
 
 .search {
@@ -242,6 +255,10 @@ button:focus {
     font-size: 1.25rem;
     position: relative;
     z-index: 5;
+}
+
+.bi-arrow-left-short:dir(rtl) {
+    transform: rotate(180deg);
 }
 
 .menu-items-title::after {
