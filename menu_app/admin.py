@@ -51,7 +51,6 @@ class SingleRowModelView(ModelView):
     edit_template = create_template
 
     id_row_name = 'id'
-
     can_delete = False
 
     def is_accessible(self):
@@ -59,19 +58,23 @@ class SingleRowModelView(ModelView):
 
     @expose('/', methods=['GET', 'POST'])
     def index_view(self):
-        self.can_edit = False
-        self.can_create = True
+        row_count = self.get_count()
 
-        count = self.get_count()
-
-        if count == 0:
+        if row_count == 0:
+            self.can_create = True
+            self.can_delete = False
             return redirect(url_for('.create_view'))
-        elif count == 1:
-            self.can_edit = True
-            self.can_create = False
+
+        self.can_create = False
+        self.can_edit = True
+
+        return redirect(url_for('.edit_view', id=self.get_first_id()))
+
+    def create_model(self, form):
+        if self.get_count() >= 1:
             return redirect(url_for('.edit_view', id=self.get_first_id()))
         else:
-            return super().index_view()
+            return super().create_model(form)
 
     def get_count(self):
         return self.session.query(self.model).count()
