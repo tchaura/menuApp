@@ -7,6 +7,7 @@ from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.sqla.filters import FilterEqual
 from flask_admin.form.upload import ImageUploadField
 from markupsafe import Markup
+from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 from wtforms import SelectField, BooleanField, TextAreaField, IntegerField
 
@@ -419,7 +420,7 @@ class InformationView(SingleRowModelView):
 
     def on_model_change(self, form, model, is_created):
         for field in ['logo', 'header_img']:
-            if form[field].data:
+            if type(form[field].data) is FileStorage:
                 compress(os.path.join(static_path, form[field].data.filename))
 
 
