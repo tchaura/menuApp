@@ -251,7 +251,7 @@ function bindImageClick() {
 function setCurrentLang() {
     let selector = document.querySelector("#lang-select select");
     let langCookie = getCookie('lang');
-    let currentLang = langCookie == null ? "en" : langCookie;
+    let currentLang = langCookie == null ? "ru" : langCookie;
 
     if (currentLang === 'fa' || currentLang === 'ar' || currentLang === 'he') {
         document.querySelector("html").setAttribute("dir", "rtl");
@@ -259,7 +259,7 @@ function setCurrentLang() {
     else {
         document.querySelector("html").setAttribute("dir", "ltr")
     }
-    selector.value = currentLang != null ? currentLang : 'en';
+    selector.value = currentLang != null ? currentLang : 'ru';
 
     document.cookie = `lang=${currentLang}; path=/; max-age=3600`;
 }
