@@ -5,17 +5,16 @@ import os
 from .models import db
 from .models import MenuItem, Subcategory, Information
 from .pillow import compress
+from .utils import rename_static_files
 
 app = Flask(__name__)
 
 # first lang is the primary
 app.config['LANGUAGES'] = {
+    'ru': 'Russian',
     'en': 'English',
-    'ge': 'Georgian',
     'tr': 'Turkish',
-    'ar': 'Arabian',
-    'fa': 'Farsi',
-    'ru': 'Russian'
+    'zh': 'Chinese'
 }
 
 app.config['DEFAULT_LANG'] = list(app.config['LANGUAGES'].keys())[0]
@@ -56,46 +55,10 @@ def compress_all():
             compress('menu_app/' + item.subcategory_photo)
 
 
-# renames all static files according to their associated row id in database
-def rename_static_files():
-    menu_items = MenuItem.query.filter(MenuItem.item_photo != "")
-    renamed_files = set()
-    for item in menu_items:
-        rename_file(item, renamed_files)
-
-
-def rename_file(item, renamed_files):
-    cur_path = item.item_photo
-
-    if cur_path is None:
-        return
-    if not os.path.exists('menu_app/' + cur_path):
-        item.item_photo = ""
-        return
-    file_extension = os.path.splitext(cur_path)[1]
-    target_path = os.path.join('static/img/menu_items/', str(item.item_id) + file_extension)
-
-    if cur_path == target_path:
-        renamed_files.add(target_path)
-        return
-
-    if cur_path in renamed_files:
-        item.item_photo = ""
-        return
-
-    if os.path.exists('menu_app/' + target_path):
-        while db.session.query(MenuItem.query.filter(MenuItem.item_photo == target_path).exists()).scalar():
-            conflicting_item = MenuItem.query.filter(MenuItem.item_photo == target_path).first()
-            rename_file(conflicting_item, renamed_files)
-
-    os.rename('menu_app/' + cur_path, 'menu_app/' + target_path)
-    item.item_photo = target_path
-    db.session.commit()
-
-    renamed_files.add(target_path)
-
-
 with app.app_context():
     db.create_all()
+    # renames all static files according to their associated row id in database
+    # rename_static_files(db)
+
 
 
