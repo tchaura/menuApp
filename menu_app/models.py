@@ -2,6 +2,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_sqlalchemy.query import Query
 from markupsafe import Markup
+from flask import request
 db = SQLAlchemy()
 
 class Category(db.Model):
@@ -10,6 +11,11 @@ class Category(db.Model):
     category_name = db.Column(db.String, nullable=False)
     subcategories = db.relationship('Subcategory', backref='category', lazy=True)
     has_subcategories = db.Column(db.Integer, default = 0)
+
+    @property
+    def category_url(self):
+        site_url = request.host_url
+        return f"{site_url}category/{self.category_id}"
         
 
 class Subcategory(db.Model):
