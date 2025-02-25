@@ -5,27 +5,31 @@ import os
 from .models import db
 from .models import MenuItem, Subcategory, Information
 from .pillow import compress
-from .utils import rename_static_files
+from .utils import rename_static_files, change_lang_code
+from .constants import STATIC_PATH, MAIN_SITE_URL, APP_ROOT_FOLDER_PATH
 
-app = Flask(__name__)
+app = Flask(__name__,
+            static_url_path='/static',
+            static_folder='static')
 
 # first lang is the primary
 app.config['LANGUAGES'] = {
     'ru': 'Russian',
     'en': 'English',
     'tr': 'Turkish',
-    'zh': 'Chinese'
+    'cn': 'Chinese'
 }
+
+app.config['STATIC_PATH'] = STATIC_PATH
+app.config['MAIN_SITE_URL'] = MAIN_SITE_URL
 
 app.config['DEFAULT_LANG'] = list(app.config['LANGUAGES'].keys())[0]
 login_manager = LoginManager(app)
+
 from . import admin
 from . import localization
-
 from . import index
-
 from . import routes
-
 from . import login
 
 db_path = os.path.join(os.path.dirname(__file__), 'db.sqlite')
@@ -47,18 +51,22 @@ def compress_all():
     # compress all photos in Subcategory and MenuItem
     menu_items = MenuItem.query.all()
     for item in menu_items:
-        if os.path.exists('menu_app/' + item.item_photo):
-            compress('menu_app/' + item.item_photo)
+        if os.path.exists(APP_ROOT_FOLDER_PATH + item.item_photo):
+            compress(APP_ROOT_FOLDER_PATH + item.item_photo)
     subcategories = Subcategory.query.all()
     for item in subcategories:
-        if os.path.exists('menu_app/' + item.subcategory_photo):
-            compress('menu_app/' + item.subcategory_photo)
+        if os.path.exists(APP_ROOT_FOLDER_PATH + item.subcategory_photo):
+            compress(APP_ROOT_FOLDER_PATH + item.subcategory_photo)
 
 
 with app.app_context():
     db.create_all()
+
     # renames all static files according to their associated row id in database
     # rename_static_files(db)
+
+    # change language code
+    # change_lang_code(db, "zh", "cn")
 
 
 

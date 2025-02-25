@@ -1,7 +1,7 @@
 import os
 
 import flask_login as login
-from flask import redirect, url_for
+from flask import redirect, url_for, request
 from flask_admin import Admin, expose
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.sqla.filters import FilterEqual
@@ -9,7 +9,7 @@ from flask_admin.form.upload import ImageUploadField
 from markupsafe import Markup
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
-from wtforms import SelectField, BooleanField, TextAreaField, IntegerField
+from wtforms import SelectField, BooleanField, TextAreaField, IntegerField, StringField
 
 from . import app
 from . import db
@@ -18,6 +18,7 @@ from .localization import extra_fields_generator
 from .login import MyAdminIndexView
 from .models import Category, Information, Subcategory, MenuItem, Popup
 from .pillow import compress
+from .widgets import LinkWidget
 
 static_path = os.path.join(app.root_path, 'static')
 
@@ -248,7 +249,12 @@ class CategoryModelView(ModelView):
     }
 
     form_extra_fields = {
-        'has_subcategories': SelectField('Добавление подкатегории', choices=[(1, 'Да'), (0, 'Нет')], coerce=int)
+        'has_subcategories': SelectField('Добавление подкатегории', choices=[(1, 'Да'), (0, 'Нет')], coerce=int),
+        'category_url': StringField(
+            label='URL',
+            description='Прямая ссылка к данной категории',
+            render_kw={'disabled': True},
+            widget=LinkWidget())
     }
 
     localized_fields = [('category_name', 'Имя категории')]
@@ -263,6 +269,11 @@ class CategoryModelView(ModelView):
 
     def on_model_delete(self, model, localized_fields=localized_fields):
         localization.on_model_delete(self, 'Categories', localized_fields, model.category_id)
+
+    def create_form(self, obj=None):
+        form = super().create_form(obj)
+        del form.category_url
+        return form
 
 
 class SubcategoryModelView(ModelView):

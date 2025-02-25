@@ -267,6 +267,7 @@ menu_app/static/img/menu_items
 menu_app/static/img/subcategories
 menu_app/static/img/info
 menu_app/db.sqlite
+menu_app/db_src.sqlite
 menu_app.session.sql
 
 # Remove DS_Store
@@ -277,3 +278,8 @@ launch.json
 
 # End custom properties
 /.vscode/
+
+.idea
+
+# Exclude important libs from gitignore
+!menu_app/static/lib

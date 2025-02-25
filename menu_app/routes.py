@@ -3,6 +3,7 @@ from .localization import get_translated_model, get_translated_row
 from flask_babel import refresh
 from flask import g, jsonify, request, session, redirect
 from .models import (Category, MenuItem, Subcategory, Popup)
+from .index import index
 
 
 @app.route("/categories")
@@ -24,6 +25,14 @@ def get_subcategories_json():
     filtered_model = list(filter(lambda row: row['category_id'] == int(category_id), translated_model))
 
     return jsonify({'subcategories': filtered_model})
+
+
+@app.route("/category/<category_id>")
+def get_category(category_id: str):
+    if category_id.isnumeric():
+        category_id = int(category_id)
+        return index(Category, category_id, **{'lang': request.cookies.get('lang')})
+    return index()
 
 
 @app.route("/get_first_category_id")

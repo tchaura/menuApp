@@ -1,8 +1,8 @@
 let content = $('#content');
 let lastState = {};
 const btn = document.querySelector("#scroll-top");
-const body = document.body;
 
+const body = document.body;
 
 function setScrollTop() {
     btn.addEventListener('click', function (e) {
@@ -86,7 +86,7 @@ async function get_subcategories(category_id) {
             content.append(
                 `<div class="subcategory col" onclick="transitionTo(get_menu_items, ${subcategory['subcategory_id']})">
                         <div class="subcategory-wrapper">
-                        <img alt="" loading="lazy" class="subcategory-photo" src="${subcategory['subcategory_photo']}" onerror="this.src = 'static/img/util/food-tray.png'; this.classList.add('fallback')" />
+                        <img alt="" loading="lazy" class="subcategory-photo" src="/${subcategory['subcategory_photo']}" onerror="this.src = '/static/img/util/food-tray.png'; this.classList.add('fallback')" />
                         </div>
                         <span class="subcategory-header">${subcategory['subcategory_name']}</span>
                         </div>`);
@@ -124,7 +124,7 @@ function displayMenuItems(data, fromSearch = false) {
     data['menu_items'].forEach(menu_item => {
         content.append(
             `<div class="menu-items col" id="${menu_item['item_id']}">
-             ${menu_item['item_photo'] ? `<div class="menu-items-img-wrapper"><img class="menu-items-img" loading="lazy" onerror="this.src = 'static/img/util/food-tray.png'; this.classList.add('fallback')" src="${menu_item['item_photo']}" alt="Menu Item"/></div>`: (areAllWithoutPhoto ? '' : `<div class="menu-items-img-wrapper"><div class="menu-items-img"></div></div>`)}
+             ${menu_item['item_photo'] ? `<div class="menu-items-img-wrapper"><img class="menu-items-img" loading="lazy" onerror="this.src = '/static/img/util/food-tray.png'; this.classList.add('fallback')" src="/${menu_item['item_photo']}" alt="Menu Item"/></div>`: (areAllWithoutPhoto ? '' : `<div class="menu-items-img-wrapper"><div class="menu-items-img"></div></div>`)}
              <div class="menu-items-header d-flex justify-content-between align-items-center mb-1">
              <h2 class="menu-items-title mb-0">${menu_item['item_name']}</h2>
              ${menu_item['weight'] ? `<div class="dots"></div> <span class="menu-items-weight">${menu_item['weight']} ${getLocaleString(menu_item['measure_unit'] === 'g' ? LOCALE_DICTS.MEASURE_UNIT_G : LOCALE_DICTS.MEASURE_UNIT_ML)}</span>` : ""}
@@ -162,11 +162,13 @@ function searchData() {
 }
 
 $(document).ready(() => {
-    let firstMenuBadge = $(".menu-badge:first-child");
-    if (firstMenuBadge) {
-        firstMenuBadge.click()
+    const redirectMenuBadge = $(".menu-badge[data-redirect]")[0];
+    const firstMenuBadge = $(".menu-badge:first-child")[0];
+    const activeBadge = redirectMenuBadge || firstMenuBadge;
+    if (activeBadge) {
+        activeBadge.click()
         lastState = {
-            'func': () => {firstMenuBadge.click()}
+            'func': () => {activeBadge.click()}
         }
     } else {
         responseFallback(getLocaleString(LOCALE_DICTS.EMPTY_RESPONSE));
@@ -184,7 +186,6 @@ function setDefaults() {
     let searchField = $('#search .search-field')[0];
     searchField.placeholder = getLocaleString(LOCALE_DICTS.SEARCH_PLACEHOLDER);
 }
-
 
 function expandCropText(item_id) {
     const description = $(`.menu-items#${item_id} .menu-items-description`);
@@ -206,7 +207,7 @@ function responseFallback(text) {
     content.removeClass("row-cols-md-2")
     content.html(
         `<div class="mt-5" style="text-align: center; color: var(--text-color)">
-                            <img class="mb-3" height="70px" src="static/img/util/food-tray.png" style="opacity:0.7">
+                            <img class="mb-3" height="70px" src="/static/img/util/food-tray.png" style="opacity:0.7">
                             <h5 class='text-center'>${text}</h5>
                             <a class='text-center' style="color: var(--text-color)" href='/'>${getLocaleString(LOCALE_DICTS.RETURN_TO_MAIN)}</a>
                             </div>`
@@ -326,48 +327,48 @@ const LOCALE_DICTS = {
         "default": "Looks like there's nothing here",
         "ru": "Похоже, тут пусто",
         "tr": "Boş gibi görünüyor",
-        "zh": "看起来这里没有什么",
+        "cn": "看起来这里没有什么",
     },
     NETWORK_ERROR: {
         "default": "Connection error",
         "ru": "Проблемы с соединением",
         "tr": "Bağlantı sorunları",
-        "zh": "连接错误",
+        "cn": "连接错误",
     },
     RETURN_TO_MAIN: {
         "default": "Back to main page",
         "ru": "Вернуться на главную",
         "tr": "Ana Sayfaya Geri Dön",
-        "zh": "返回主页",
+        "cn": "返回主页",
     },
     SEARCH_PLACEHOLDER: {
         "default": "Search...",
         "ru": "Поиск...",
         "tr": "Arama...",
-        "zh": "搜索...",
+        "cn": "搜索...",
     },
     MEASURE_UNIT_G: {
         "default": "g",
         "ru": "г",
         "tr": "g",
-        "zh": "克",
+        "cn": "克",
     },
     MEASURE_UNIT_ML: {
         "default": "ml",
         "ru": "мл",
         "tr": "ml",
-        "zh": "毫升",
+        "cn": "毫升",
     },
     CURRENCY: {
         "default": 'Br',
         "ru": 'Br',
         "tr": 'Br',
-        "zh": 'Br',
+        "cn": 'Br',
     },
     INGREDIENTS: {
         "default": "Ingredients",
         "ru": "Состав",
         "tr": "İçindekiler",
-        "zh": "成分",
+        "cn": "成分",
     }
 };

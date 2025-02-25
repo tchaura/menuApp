@@ -1,7 +1,8 @@
 import os
 
 from flask_sqlalchemy import SQLAlchemy
-from .models import Subcategory, MenuItem
+from .models import Subcategory, MenuItem, Translation
+
 
 def rename_static_files(db: SQLAlchemy):
     for entity_name, entity_meta in ENTITIES_TO_RENAME.items():
@@ -60,3 +61,14 @@ ENTITIES_TO_RENAME = {
         'photo': 'subcategory_photo'
     },
 }
+
+def change_lang_code(db: SQLAlchemy, from_code: str, to_code: str):
+    translations = db.session.query(Translation).filter(Translation.language_code == from_code)
+
+    if not translations:
+        return
+
+    for translation in translations:
+        translation.language_code = to_code
+
+    db.session.commit()

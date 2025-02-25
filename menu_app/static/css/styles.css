@@ -14,7 +14,6 @@
 body {
     font-family: Raleway, sans-serif;
     margin: 0 auto;
-    /*max-width: 30rem;*/
     display: flex;
     flex-direction: column;
     min-height: 100vh;
@@ -53,6 +52,10 @@ body {
     width: 120px;
     height: 120px;
     object-fit: contain;
+}
+
+.header-logo img {
+    width: 120px;
 }
 
 .info {
