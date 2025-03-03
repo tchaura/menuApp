@@ -1,4 +1,4 @@
-import datetime
+from posixpath import join as urljoin
 from typing import Type
 
 from flask import (
@@ -7,6 +7,7 @@ from flask import (
 
 from .models import (Category, Information, Popup, Subcategory)
 from .localization import get_translated_model
+import menu_app.constants as constants
 
 from . import app, db, MenuItem
 
@@ -49,6 +50,9 @@ def index(redirect_type: Type[db.Model] = None, redirect_id: int = None, **kwarg
     # redirect currently working with category type only :(
     if is_valid_redirect and redirect_type is Category:
         enrich_category_with_redirect(args['categories'], redirect_id)
+
+    args['site_url'] = urljoin(constants.MAIN_SITE_URL, constants.MAIN_SITE_LOCALE_PATHS.get(lang) or "") \
+        if constants.MAIN_SITE_URL else ""
 
     response = make_response(render_template('subcategories.html', **args))
     response.set_cookie('lang', lang)
