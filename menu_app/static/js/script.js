@@ -254,7 +254,7 @@ function setCurrentLang() {
     let langCookie = getCookie('lang');
     let currentLang = langCookie == null ? "en" : langCookie;
 
-    if (currentLang === 'fa' || currentLang === 'ar' || currentLang === 'he') {
+    if (currentLang === 'fa' || currentLang === 'ar') {
         document.querySelector("html").setAttribute("dir", "rtl");
     }
     else {
@@ -326,52 +326,60 @@ const LOCALE_DICTS = {
     EMPTY_RESPONSE: {
         "default": "Looks like there's nothing here",
         "ru": "Похоже, тут пусто",
-        "tr": "Boş gibi görünüyor",
-        "ge": "ეს ნიშნავს, რომ აქ არაფერია",
+        "en": "Looks like there's nothing here",
+        "am": "Թվում է, թե այստեղ ոչինչ չկա",
         "ar": "يبدو أنه لا يوجد شيء هنا",
         "fa": "به نظر می رسد اینجا چیزی نیست",
     },
     NETWORK_ERROR: {
         "default": "Connection error",
         "ru": "Проблемы с соединением",
-        "tr": "Bağlantı sorunları",
-        "ge": "კავშირის შეფერხება",
+        "en": "Connection error",
+        "am": "Միացման սխալ",
         "ar": "خطأ في الاتصال",
         "fa": "خطای اتصال",
     },
     RETURN_TO_MAIN: {
         "default": "Back to main page",
         "ru": "Вернуться на главную",
-        "tr": "Ana Sayfaya Geri Dön",
-        "ge": "უკან დაბრუნება მთავარ გვერდზე",
+        "en": "Back to main page",
+        "am": "Վերադառնալ գլխավոր էջ",
         "ar": "العودة إلى الصفحة الرئيسية",
         "fa": "بازگشت به صفحه اصلی",
     },
     SEARCH_PLACEHOLDER: {
         "default": "Search...",
         "ru": "Поиск...",
-        "tr": "Arama teriminizi girin...",
-        "ge": "ძიება...",
+        "en": "Search...",
+        "am": "Որոնել...",
         "ar": "بحث...",
         "fa": "جستجو...",
     },
     MEASURE_UNIT_G: {
         "default": "g",
         "ru": "г",
+        "en": "g",
+        "am": "գ",
+        "ar": "غ",
+        "fa": "گ"
     },
     MEASURE_UNIT_ML: {
         "default": "ml",
         "ru": "мл",
+        "en": "ml",
+        "am": "մլ",
+        "ar": "مل",
+        "fa": "مل"
     },
     CURRENCY: {
-        "default": '₾'
+        "default": 'Դ'
     },
     INGREDIENTS: {
         "default": "Ingredients",
         "ru": "Состав",
-        "ge": "Συστατικά",
-        "tr": "İçindekiler",
+        "en": "Ingredients",
+        "am": "Բաղադրիչներ",
         "ar": "المكونات",
-        "fa": "المكونات",
+        "fa": "مواد تشکیل دهنده"
     }
 };

@@ -14,12 +14,11 @@ app = Flask(__name__,
 
 # first lang is the primary
 app.config['LANGUAGES'] = {
+    'ru': 'Russian',
     'en': 'English',
-    'ge': 'Georgian',
-    'tr': 'Turkish',
+    'am': 'Armenian',
     'ar': 'Arabian',
-    'fa': 'Farsi',
-    'ru': 'Russian'
+    'fa': 'Farsi'
 }
 
 app.config['STATIC_PATH'] = STATIC_PATH
